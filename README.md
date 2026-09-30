@@ -8,5 +8,8 @@ A fun, mission-based tutorial that teaches middle schoolers CircuitPython on the
 - Setup: installing CircuitPython, adding libraries, connecting the web editor
 - 12 missions covering every CLUE feature, plus a boss-level game and a cheat sheet
 - XP bar that saves progress in the browser
+- **Screen Lab** (`screen.html`): how the 240x240 screen works: pixels, coordinates vs Scratch, RGB565 colors, displayio layers, bitmaptools / vectorio / adafruit_display_shapes, animation speed, memory
+- **Picture Maker** (`picture.html`): turns a photo, GIF or camera snapshot into CircuitPython code (or a .bmp + code) that shows it full screen on the CLUE
+- Everything in English and Greek (`el/`)
 
-It's one static `index.html` file, so edit it and push.
+Plain static HTML/CSS/JS, no build step: edit and push. Every code example was run on a real CLUE (CircuitPython 10.3.1).

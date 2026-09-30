@@ -101,3 +101,46 @@ footer{text-align:center;padding:40px 16px 60px;font-size:.9rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .lang{margin-left:auto;background:var(--yellow);color:var(--ink);font-weight:900;text-decoration:none;border:3px solid #fff;border-radius:99px;padding:4px 14px;box-shadow:3px 3px 0 var(--pink);white-space:nowrap}
 .lang:hover{background:var(--pink);color:#fff}
+
+/* Picture Maker + Screen Lab */
+.pm-hero{padding:32px 0 0}
+.pm-hero h1{font-size:clamp(2.4rem,6vw,3.8rem);margin:0}
+.pm-hero h1 span{color:var(--pink);-webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink)}
+.pm-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start}
+.pm-grid section.card{margin:32px 0 0}
+.btn.small{font-size:.95rem;padding:6px 14px;box-shadow:4px 4px 0 var(--ink);margin:4px 6px 4px 0}
+.drop{display:block;text-align:center;border:3px dashed var(--ink);border-radius:14px;padding:18px;cursor:pointer;background:#f0fcff}
+.drop.over{background:#fff0f8;border-color:var(--pink)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop .big{font-size:2.4rem;display:block}
+.drop b,.drop small{display:block}
+.pm-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pm-field{display:block;margin:10px 0;font-weight:700}
+.pm-field select,.pm-field input[type=range]{display:block;width:100%;margin-top:4px;font:inherit;font-weight:400;padding:4px;border:2px solid var(--ink);border-radius:8px;background:#fff}
+.pm-field input[type=range]{accent-color:var(--pink);padding:0;border:0}
+.pm-field input[type=color]{vertical-align:middle;border:2px solid var(--ink);border-radius:6px;width:44px;height:28px}
+.pm-check{display:flex;gap:8px;align-items:flex-start;margin:8px 0}
+.pm-check input{margin-top:6px;accent-color:var(--pink)}
+#camBox video{width:100%;border:3px solid var(--ink);border-radius:12px}
+.clue-frame{background:#1e2a55;border:5px solid var(--ink);border-radius:26px;padding:22px;box-shadow:var(--shadow);max-width:360px;margin:8px auto}
+.clue-frame canvas{display:block;width:100%;aspect-ratio:1;background:#000;border:4px solid #111;border-radius:6px;image-rendering:pixelated}
+.status{font-weight:900;border-radius:10px;padding:8px 12px;border:3px solid var(--ink);background:#fff}
+.status.ok{background:#dcfce7}.status.warn{background:#fef9c3}.status.bad{background:#fee2e2}
+.meter{display:grid;grid-template-columns:110px 1fr auto;gap:8px;align-items:center;font-weight:700;font-size:.9rem;margin:6px 0}
+.meter .bar{height:14px;border:2px solid var(--ink);border-radius:99px;overflow:hidden;background:#fff}
+.meter .bar div{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));transition:width .3s}
+#code{width:100%;height:280px;font:13px/1.4 "JetBrains Mono",monospace;border:3px solid var(--ink);border-radius:12px;padding:10px;background:#2d2d2d;color:#e6e6e6;resize:vertical}
+@media (max-width:760px){.pm-grid{grid-template-columns:1fr}.meter{grid-template-columns:90px 1fr}.meter small{grid-column:1/-1}}
+.lab{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin:1em 0}
+#coordCanvas{width:min(100%,360px);aspect-ratio:1;border:4px solid var(--ink);border-radius:10px;image-rendering:pixelated;cursor:crosshair;touch-action:none}
+.lab-read p{margin:.3em 0;font-size:1.1rem}
+.mixer label{display:block;font-weight:700}
+.mixer input[type=range]{width:min(260px,70vw);vertical-align:middle}
+#mr{accent-color:#e11d48}#mg{accent-color:#16a34a}#mb{accent-color:#2563eb}
+.swatches{display:flex;gap:14px;text-align:center}
+.sw{width:110px;height:110px;border:4px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink)}
+.cake{display:flex;flex-direction:column;gap:6px;max-width:520px;margin:1em auto}
+.cake div{background:var(--c);border:3px solid var(--ink);border-radius:12px;padding:8px 14px;box-shadow:3px 3px 0 var(--ink)}
+.cake b{font-family:"JetBrains Mono",monospace;margin-right:8px}
+.cake div:nth-child(2){margin-left:20px}.cake div:nth-child(3){margin-left:40px}.cake div:nth-child(4){margin-left:60px}.cake div:nth-child(5){margin-left:80px}
+@media (max-width:760px){.cake div{margin-left:0!important}}

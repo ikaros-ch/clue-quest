@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picture Maker · CLUE Quest</title>
+<meta name="description" content="Κάνε οποιαδήποτε φωτογραφία ή GIF κώδικα CircuitPython που τη δείχνει σε όλη την οθόνη του Adafruit CLUE.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🖼️%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="./">CLUE Quest</a>
+  <nav><a href="./">Αποστολές</a><a href="screen.html">Εργαστήριο Οθόνης</a><a href="picture.html">Picture Maker</a></nav>
+  <a class="lang" href="../picture.html" lang="en">🌍 English</a>
+</header>
+
+<main class="wrap">
+  <div class="pm-hero">
+    <span class="sticker">Εφαρμογή 🖼️</span>
+    <h1>Picture <span>Maker</span></h1>
+    <p class="lead">Διάλεξε μια φωτογραφία, ένα GIF ή βγάλε μια selfie. Η εφαρμογή τη μικραίνει για να χωρέσει στην οθόνη 240 × 240 του CLUE, διαλέγει τα καλύτερα χρώματα και γράφει τον κώδικα CircuitPython για σένα. Θέλεις να μάθεις πώς δουλεύει; Διάβασε το <a href="screen.html">Εργαστήριο Οθόνης</a>.</p>
+  </div>
+
+  <div class="pm-grid">
+    <section class="card" style="--c:var(--cyan)" id="controls">
+      <span class="tag">1 · Εικόνα</span>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*">
+        <span class="big">📂</span><b>Ρίξε εδώ μια φωτογραφία ή ένα GIF</b><small>ή κάνε κλικ για να διαλέξεις</small>
+      </label>
+      <p class="pm-row"><button class="btn small" id="camBtn" type="button">📷 Χρησιμοποίησε την κάμερα</button> <small id="srcInfo"></small></p>
+      <div id="camBox" hidden><video id="video" autoplay playsinline muted></video><button class="btn small" id="snapBtn" type="button">📸 Κλικ!</button></div>
+
+      <h3>2 · Ρυθμίσεις</h3>
+      <label class="pm-field">Μέγεθος
+        <select id="size">
+          <option value="240">240 × 240: καθαρή (κάθε pixel)</option>
+          <option value="120" selected>120 × 120: χοντροκομμένη (κάθε pixel ×2)</option>
+          <option value="80">80 × 80: ρετρό (κάθε pixel ×3)</option>
+          <option value="60">60 × 60: pixel art (κάθε pixel ×4)</option>
+        </select></label>
+      <label class="pm-field">Χρώματα: <b id="colorsVal"></b>
+        <input type="range" id="colors" min="2" max="256" value="16"></label>
+      <label class="pm-field">Προσαρμογή
+        <select id="fit">
+          <option value="fill">Γέμισε την οθόνη (κόψε τις άκρες)</option>
+          <option value="fit">Δείξε τα πάντα (βάλε μπάρες)</option>
+          <option value="stretch">Τέντωσε (στρίμωξέ τη)</option>
+        </select></label>
+      <label class="pm-field">Χρώμα μπάρας <input type="color" id="bg" value="#000000"></label>
+      <label class="pm-check"><input type="checkbox" id="dither" checked> Dithering (ανακάτεμα από τελείες για να φαίνονται περισσότερα χρώματα)</label>
+      <label class="pm-field" id="frameRow" hidden>Καρέ του GIF που θα χρησιμοποιηθούν: <b id="framesVal"></b>
+        <input type="range" id="frames" min="1" max="30" value="8"></label>
+
+      <h3>3 · Πώς θα το στείλεις</h3>
+      <label class="pm-check"><input type="radio" name="mode" value="code" checked> <span><b>Μόνο κώδικας</b>: επικόλλησέ τον στο code.py, δεν χρειάζεται να ανεβάσεις τίποτα άλλο. Δουλεύει και για GIF.</span></label>
+      <label class="pm-check"><input type="radio" name="mode" value="file"> <span><b>Αρχείο εικόνας + κώδικας</b>: η καλύτερη ποιότητα (έως 256 χρώματα σε 240 × 240), μόνο για ακίνητες εικόνες.</span></label>
+      <button class="btn small" id="autoBtn" type="button">✨ Αυτόματη προσαρμογή για το CLUE</button>
+    </section>
+
+    <section class="card" style="--c:var(--pink)">
+      <span class="tag">Προεπισκόπηση</span>
+      <div class="clue-frame"><canvas id="preview" width="480" height="480"></canvas></div>
+      <p class="status" id="status"></p>
+      <div class="meter"><span>Μέγεθος code.py</span><div class="bar"><div id="sizeBar"></div></div><small id="sizeTxt"></small></div>
+      <div class="meter"><span>Μνήμη CLUE</span><div class="bar"><div id="ramBar"></div></div><small id="ramTxt"></small></div>
+      <p><small>Χρώματα στην παλέτα: <b id="palInfo">–</b>. Η προεπισκόπηση χρησιμοποιεί τα πραγματικά χρώματα RGB565 της οθόνης.</small></p>
+    </section>
+  </div>
+
+  <section class="card" style="--c:var(--yellow)">
+    <span class="tag">4 · Ο κώδικάς σου</span>
+    <p class="pm-row">
+      <button class="btn small" id="copyBtn" type="button">📋 Αντιγραφή κώδικα</button>
+      <button class="btn small" id="dlBtn" type="button">💾 Κατέβασε το code.py</button>
+      <button class="btn small" id="bmpBtn" type="button" hidden>🖼️ Κατέβασε το picture.bmp</button>
+    </p>
+    <textarea id="code" readonly spellcheck="false" aria-label="Κώδικας CircuitPython που δημιουργήθηκε"></textarea>
+    <h3>Βάλ' το στο CLUE σου</h3>
+    <ol class="steps">
+      <li>Συνδέσου στο <a href="https://code.circuitpython.org/" target="_blank" rel="noopener">code.circuitpython.org</a> (δες <a href="./#setup">Εγκατάσταση, Μέρος Γ</a>) και άνοιξε το <code>code.py</code>.</li>
+      <li><b>Μόνο κώδικας:</b> επίλεξε τα πάντα στο code.py, επικόλλησε τον κώδικά σου και πάτα <b>Save + Run</b>. Έτοιμο!</li>
+      <li><b>Αρχείο εικόνας:</b> πάτα <b>Open</b>, μετά το κουμπί <b>upload</b> (βελάκι προς τα πάνω) στο παράθυρο των αρχείων και ανέβασε το <code>picture.bmp</code>. Μετά επικόλλησε τον κώδικα στο code.py και πάτα <b>Save + Run</b>.</li>
+    </ol>
+    <div class="box tip"><b>💡 Γιατί τόσο λίγα χρώματα;</b><br>Κάθε χρώμα κοστίζει μνήμη, και το CLUE έχει μόνο περίπου 70 KB ελεύθερα για το πρόγραμμά σου. Οι μεγάλες φωτογραφίες χρειάζονται dithering για να φαίνονται ωραίες, αλλά οι εικόνες με dithering στριμώχνονται πιο δύσκολα. Οι μετρητές σού λένε πότε χωράει. Το <a href="screen.html#memory">Εργαστήριο Οθόνης</a> εξηγεί τα μαθηματικά.</div>
+  </section>
+</main>
+
+<footer>Φτιαγμένο με 💜 για νέους makers · <a href="./">Πίσω στο CLUE Quest</a></footer>
+<script src="../picture.js"></script>
+</body>
+</html>

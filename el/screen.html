@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Εργαστήριο Οθόνης · CLUE Quest</title>
+<meta name="description" content="Πώς δουλεύει η οθόνη 240x240 του Adafruit CLUE: pixel, συντεταγμένες, χρώματα, displayio, σχήματα, ταχύτητα κίνησης και μνήμη.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E📺%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="./">CLUE Quest</a>
+  <nav><a href="./">Αποστολές</a><a href="#coords">Συντεταγμένες</a><a href="#colors">Χρώματα</a><a href="#draw">Σχέδιο</a><a href="#memory">Μνήμη</a><a href="picture.html">Picture Maker</a></nav>
+  <a class="lang" href="../screen.html" lang="en">🌍 English</a>
+</header>
+
+<main class="wrap">
+  <div class="pm-hero">
+    <span class="sticker">Σε βάθος 🔬</span>
+    <h1>Εργαστήριο <span>Οθόνης</span></h1>
+    <p class="lead">Πώς κάνει το CLUE τον κώδικά σου εικόνες; Ας κάνουμε ζουμ μέχρι μέσα: pixel, συντεταγμένες, χρώματα, στρώσεις, σχέδιο, κίνηση και μνήμη. Κάθε παράδειγμα εδώ δοκιμάστηκε σε αληθινό CLUE.</p>
+  </div>
+
+<section class="card" id="pixels" style="--c:var(--cyan)">
+  <span class="tag">Μέρος 1</span>
+  <h2><span class="emoji">🔍</span>Μια οθόνη είναι ένα πλέγμα από μικροσκοπικά φωτάκια</h2>
+  <p>Η οθόνη του CLUE είναι μια <b>έγχρωμη οθόνη TFT 1,3 ιντσών</b>. Από κοντά είναι ένα πλέγμα από <b>240 × 240 = 57.600 pixel</b>. Κάθε pixel είναι στην πραγματικότητα 3 ακόμα πιο μικροσκοπικά φωτάκια, <b style="color:#e11d48">κόκκινο</b>, <b style="color:#16a34a">πράσινο</b> και <b style="color:#2563eb">μπλε</b>, τόσο μικρά που τα μάτια σου δεν τα ξεχωρίζουν, οπότε ανακατεύονται σε ένα χρώμα.</p>
+  <div class="grid">
+    <div class="part"><span class="big">🧠</span><b>Ο εγκέφαλος</b><small>Το τσιπ nRF52840 τρέχει τον κώδικά σου σε Python</small></div>
+    <div class="part"><span class="big">〰️</span><b>Τα καλώδια (SPI)</b><small>Τα pixel ταξιδεύουν στην οθόνη το ένα μετά το άλλο, πολύ γρήγορα</small></div>
+    <div class="part"><span class="big">🎛️</span><b>Το τσιπ της οθόνης (ST7789)</b><small>Θυμάται κάθε pixel και το κρατάει αναμμένο</small></div>
+    <div class="part"><span class="big">💡</span><b>Ο οπισθοφωτισμός</b><small>Ένα φως πίσω από όλα: αυτό είναι η φωτεινότητα</small></div>
+  </div>
+  <p>Στην CircuitPython η οθόνη λέγεται <code>board.DISPLAY</code>. Δεν μιλάς ποτέ ο ίδιος στα καλώδια: ένα σύστημα που λέγεται <b>displayio</b> βρίσκει ποια pixel άλλαξαν και στέλνει μόνο αυτά. Θυμήσου το, είναι το μυστικό για <a href="#speed">γρήγορη κίνηση</a>!</p>
+</section>
+
+<section class="card" id="coords" style="--c:var(--yellow)">
+  <span class="tag">Μέρος 2</span>
+  <h2><span class="emoji">📍</span>Συντεταγμένες: πού είναι ένα pixel;</h2>
+  <p>Κάθε pixel έχει μια διεύθυνση <b>(x, y)</b>. Το <b>x</b> μετράει από τα <b>αριστερά</b>, το <b>y</b> μετράει από <b>πάνω</b>. Το πρώτο pixel είναι το <b>(0, 0)</b> στην <b>πάνω αριστερή</b> γωνία, και το τελευταίο είναι το <b>(239, 239)</b> κάτω δεξιά.</p>
+  <div class="box warn"><b>🐱 Φίλοι του Scratch, προσοχή!</b><br>Στο Scratch, το (0, 0) είναι στη <b>μέση</b> της σκηνής και το y πηγαίνει <b>προς τα πάνω</b>. Στο CLUE, το (0, 0) είναι στην <b>πάνω αριστερή γωνία</b> και το y πηγαίνει <b>προς τα κάτω</b>. Για να μετατρέψεις: <code>clue_x = scratch_x + 120</code> και <code>clue_y = 120 - scratch_y</code>.</div>
+  <p><b>Δοκίμασέ το:</b> κούνησε το ποντίκι σου (ή το δάχτυλό σου) πάνω από την οθόνη από κάτω.</p>
+  <div class="lab">
+    <canvas id="coordCanvas" width="240" height="240" aria-label="Εξερευνητής συντεταγμένων"></canvas>
+    <div class="lab-read">
+      <p>CLUE: <b id="cx">x = ?, y = ?</b></p>
+      <p>Scratch: <b id="sx">x = ?, y = ?</b></p>
+      <p><small>Οι κόκκινες γραμμές είναι ανά 40 pixel. Η μέση της οθόνης είναι το (120, 120).</small></p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="colors" style="--c:var(--pink)">
+  <span class="tag">Μέρος 3</span>
+  <h2><span class="emoji">🎨</span>Χρώματα: ανακατεύοντας φως</h2>
+  <p>Οι οθόνες ανακατεύουν <b>φως</b>, όχι μπογιά, οπότε κόκκινο + πράσινο κάνει <b style="color:#ca8a04">κίτρινο</b>, και και τα τρία στο φουλ κάνουν <b>λευκό</b>. Στον κώδικα ένα χρώμα είναι 3 αριθμοί από 0 έως 255: <code>(κόκκινο, πράσινο, μπλε)</code>. Θα τα δεις γραμμένα και σε <b>δεκαεξαδικό</b> (hex, με βάση το 16), όπως <code>0xFF4FA3</code>: δύο ψηφία για το κόκκινο, δύο για το πράσινο, δύο για το μπλε.</p>
+  <div class="lab mixer">
+    <div>
+      <label>Κόκκινο <input type="range" id="mr" min="0" max="255" value="255"></label>
+      <label>Πράσινο <input type="range" id="mg" min="0" max="255" value="79"></label>
+      <label>Μπλε <input type="range" id="mb" min="0" max="255" value="163"></label>
+      <p><code id="mTuple"></code> &nbsp; <code id="mHex"></code></p>
+      <p>RGB565: <code id="m565"></code></p>
+    </div>
+    <div class="swatches">
+      <div><div class="sw" id="sw24"></div><small>Αυτό που ζήτησες</small></div>
+      <div><div class="sw" id="sw16"></div><small>Αυτό που δείχνει το CLUE</small></div>
+    </div>
+  </div>
+  <h3>Το μυστικό: η οθόνη έχει μόνο 65.536 χρώματα</h3>
+  <p>Ο κώδικάς σου μπορεί να ζητήσει 16,7 εκατομμύρια χρώματα (256 × 256 × 256), αλλά η οθόνη του CLUE αποθηκεύει κάθε pixel σε <b>16 bit</b>: <b style="color:#e11d48">5 bit για το κόκκινο</b>, <b style="color:#16a34a">6 bit για το πράσινο</b> και <b style="color:#2563eb">5 bit για το μπλε</b>. Αυτό λέγεται <b>RGB565</b>. Το πράσινο παίρνει το έξτρα bit γιατί τα ανθρώπινα μάτια ξεχωρίζουν καλύτερα τις αποχρώσεις του πράσινου! Έτσι, χρώματα που μοιάζουν πολύ μπορεί να βγουν ακριβώς ίδια. Κοίτα το κουτί RGB565 από πάνω καθώς μετακινείς ένα ρυθμιστικό κατά 1.</p>
+</section>
+
+<section class="card" id="layers" style="--c:var(--purple)">
+  <span class="tag">Μέρος 4</span>
+  <h2><span class="emoji">🎂</span>displayio: μια τούρτα με στρώσεις</h2>
+  <p>Δεν ζωγραφίζεις κατευθείαν πάνω στην οθόνη. Χτίζεις μια <b>στοίβα από στρώσεις</b>, και το displayio τις ζωγραφίζει με τη σειρά, από κάτω προς τα πάνω, σαν αυτοκόλλητα σε μια σελίδα:</p>
+  <div class="cake">
+    <div style="--c:#ffd23f"><b>board.DISPLAY</b><small>η αληθινή οθόνη</small></div>
+    <div style="--c:#ff8a3d"><b>root_group</b><small>η μία ομάδα που δείχνει η οθόνη</small></div>
+    <div style="--c:#ff4fa3"><b>Group</b><small>μια στρώση· μπορεί να μετακινηθεί (x, y) και να μεγεθυνθεί (scale)</small></div>
+    <div style="--c:#8b5cf6"><b>TileGrid · Label · Shape</b><small>πράγματα που βλέπεις</small></div>
+    <div style="--c:#22d3ee"><b>Bitmap + Palette</b><small>τα pixel (αριθμοί) + τα βαζάκια με τις μπογιές (χρώματα)</small></div>
+  </div>
+  <p>Ένα <b>Bitmap</b> (χάρτης από pixel) μοιάζει με ζωγραφική με αριθμούς: κάθε pixel αποθηκεύει έναν μικρό <b>αριθμό</b> (0, 1, 2…), και η <b>Palette</b> (παλέτα) λέει ποιο χρώμα σημαίνει κάθε αριθμός. Άλλαξε ένα χρώμα της παλέτας και όλα τα pixel με αυτόν τον αριθμό αλλάζουν μαζί. Είναι ένα φτηνό μαγικό κόλπο για αναβοσβήσιμο και σβήσιμο!</p>
+</section>
+
+<section class="card" id="plot" style="--c:var(--green)">
+  <span class="tag">Μέρος 5</span>
+  <h2><span class="emoji">✏️</span>Ζωγράφισε pixel μόνος σου</h2>
+  <p>Εδώ είναι όλη η τούρτα με τις στρώσεις σε κώδικα. Το <code>bitmap[x, y] = αριθμός</code> χρωματίζει ΕΝΑ pixel.</p>
+  <pre><code class="language-python">import random
+import board
+import displayio
+
+bitmap = displayio.Bitmap(240, 240, 4)   # 240 x 240 pixel, μέχρι 4 χρώματα
+palette = displayio.Palette(4)           # τα 4 βαζάκια με μπογιά
+palette[0] = 0x000022                    # 0 = νυχτερινός ουρανός
+palette[1] = 0xFFFFFF                    # 1 = λευκό
+palette[2] = 0xFFD23F                    # 2 = κίτρινο
+palette[3] = 0xFF4FA3                    # 3 = ροζ
+
+group = displayio.Group()
+group.append(displayio.TileGrid(bitmap, pixel_shader=palette))
+board.DISPLAY.root_group = group
+
+bitmap[120, 120] = 3                     # ΕΝΑ ροζ pixel στη μέση
+
+for i in range(300):                     # 300 τυχαία αστέρια
+    x = random.randint(0, 239)
+    y = random.randint(0, 239)
+    bitmap[x, y] = random.choice([1, 2])
+
+for x in range(240):                     # μια κίτρινη γραμμή στο κάτω μέρος
+    bitmap[x, 200] = 2
+
+while True:
+    pass</code></pre>
+  <h3>Κόλπο με ζουμ: pixel art</h3>
+  <p>Ένα <code>Group</code> μπορεί να <b>μεγεθύνει</b> (scale) ό,τι έχει μέσα του. Ζωγράφισε μια μικροσκοπική εικόνα 8 × 8 από μια <a href="./#python">λίστα με strings</a>, και μετά μεγάλωσέ την 30 φορές ώστε να γεμίσει την οθόνη:</p>
+  <pre><code class="language-python">import board
+import displayio
+
+ART = [
+    "..####..",
+    ".#....#.",
+    "#.#..#.#",
+    "#......#",
+    "#.#..#.#",
+    "#..##..#",
+    ".#....#.",
+    "..####..",
+]
+
+palette = displayio.Palette(2)
+palette[0] = 0xFFD23F      # "." = κίτρινο
+palette[1] = 0x1B1340      # "#" = σκούρο μελάνι
+
+bitmap = displayio.Bitmap(8, 8, 2)
+for y, row in enumerate(ART):          # το enumerate δίνει τη θέση ΚΑΙ το στοιχείο
+    for x, ch in enumerate(row):
+        if ch == "#":
+            bitmap[x, y] = 1
+
+group = displayio.Group(scale=30)      # κάθε pixel γίνεται ένα τετράγωνο 30 x 30!
+group.append(displayio.TileGrid(bitmap, pixel_shader=palette))
+board.DISPLAY.root_group = group
+
+while True:
+    pass</code></pre>
+  <div class="box challenge"><b>🏆 Πρόκληση</b><br>Ζωγράφισε το δικό σου sprite 8 × 8 (μια καρδιά, ένα φαντασματάκι, έναν space invader…). Πρόσθεσε ένα τρίτο χρώμα: κάνε την παλέτα μήκους 3 και χρησιμοποίησε κι άλλο γράμμα, όπως το <code>"o"</code>.</div>
+</section>
+
+<section class="card" id="draw" style="--c:var(--orange)">
+  <span class="tag">Μέρος 6</span>
+  <h2><span class="emoji">🔷</span>Σχεδιάζοντας σχήματα: 3 εργαλειοθήκες</h2>
+  <p>Το να ζωγραφίζεις ένα pixel τη φορά είναι αργό για μεγάλα σχήματα. Υπάρχουν τρεις εργαλειοθήκες που σχεδιάζουν σχήματα για σένα:</p>
+  <div class="tbl"><table>
+    <tr><th>Εργαλειοθήκη</th><th>Εγκατάσταση;</th><th>Ιδανική για</th></tr>
+    <tr><td><code>bitmaptools</code></td><td>Ενσωματωμένη ✅</td><td>Σχέδιο <b>μέσα σε</b> ένα bitmap: γραμμές, κύκλους, κουτιά, πολύγωνα, γέμισμα με κουβά μπογιάς</td></tr>
+    <tr><td><code>vectorio</code></td><td>Ενσωματωμένη ✅</td><td>Σχήματα που <b>κινούνται</b>: κύκλους, ορθογώνια, πολύγωνα. Γρήγορη και θέλει λίγη μνήμη</td></tr>
+    <tr><td><code>adafruit_display_shapes</code></td><td>Βιβλιοθήκη 📁</td><td>Εύκολα σχήματα με περίγραμμα: Rect, RoundRect, Circle, Triangle, Line, Polygon, και γραφήματα <b>Sparkline</b></td></tr>
+  </table></div>
+
+  <h3>bitmaptools: σχέδιο μέσα σε ένα bitmap</h3>
+  <pre><code class="language-python">import array
+import board
+import displayio
+import bitmaptools
+
+bitmap = displayio.Bitmap(240, 240, 5)
+palette = displayio.Palette(5)
+palette[0] = 0x000000   # μαύρο
+palette[1] = 0xFF4FA3   # ροζ
+palette[2] = 0x22D3EE   # κυανό
+palette[3] = 0xFFD23F   # κίτρινο
+palette[4] = 0x3EE07A   # πράσινο
+
+group = displayio.Group()
+group.append(displayio.TileGrid(bitmap, pixel_shader=palette))
+board.DISPLAY.root_group = group
+
+bitmaptools.fill_region(bitmap, 20, 20, 100, 100, 1)       # κουτί: x1, y1, x2, y2, χρώμα
+bitmaptools.draw_line(bitmap, 0, 239, 239, 0, 2)           # γραμμή από γωνία σε γωνία
+bitmaptools.draw_circle(bitmap, 170, 70, 40, 3)            # κύκλος: x, y, ακτίνα, χρώμα
+bitmaptools.boundary_fill(bitmap, 170, 70, 3, 0)           # κουβάς μπογιάς! γέμισε το εσωτερικό
+
+xs = array.array("h", [40, 120, 80])                        # οι γωνίες ενός τριγώνου
+ys = array.array("h", [220, 220, 150])
+bitmaptools.draw_polygon(bitmap, xs, ys, 4)
+
+while True:
+    pass</code></pre>
+  <p>Το <code>array.array("h", [...])</code> είναι μια συμπαγής λίστα με ακέραιους αριθμούς, και αυτό θέλει το <code>draw_polygon</code> για τις θέσεις των γωνιών.</p>
+
+  <h3>vectorio: σχήματα που κινούνται (μπάλα που αναπηδά!)</h3>
+  <p>Κάθε σχήμα του vectorio έχει δικά του <code>x</code> και <code>y</code>. Άλλαξέ τα και το σχήμα κινείται. Το displayio ξαναζωγραφίζει μόνο τη μικρή περιοχή γύρω από τη μπάλα.</p>
+  <pre><code class="language-python">import time
+import board
+import displayio
+import vectorio
+
+sky = displayio.Palette(1)
+sky[0] = 0x1B1340
+pink = displayio.Palette(1)
+pink[0] = 0xFF4FA3
+
+group = displayio.Group()
+group.append(vectorio.Rectangle(pixel_shader=sky, width=240, height=240, x=0, y=0))
+ball = vectorio.Circle(pixel_shader=pink, radius=15, x=120, y=120)
+group.append(ball)
+board.DISPLAY.root_group = group
+
+dx, dy = 3, 2                     # πόσο κινείται η μπάλα σε κάθε βήμα
+while True:
+    ball.x += dx
+    ball.y += dy
+    if ball.x &lt; 15 or ball.x &gt; 225:   # χτύπησε σε πλαϊνό τοίχο; αναπήδα!
+        dx = -dx
+    if ball.y &lt; 15 or ball.y &gt; 225:   # χτύπησε πάνω ή κάτω; αναπήδα!
+        dy = -dy
+    time.sleep(0.01)</code></pre>
+
+  <h3>adafruit_display_shapes: σχήματα με περίγραμμα</h3>
+  <p>Αυτή είναι βιβλιοθήκη. Αντέγραψε τον φάκελο <code>adafruit_display_shapes</code> από το <a href="./#setup">bundle με τις βιβλιοθήκες</a> στο <code>CIRCUITPY/lib</code>, όπως ακριβώς στο Μέρος B της Εγκατάστασης.</p>
+  <pre><code class="language-python">import board
+import displayio
+from adafruit_display_shapes.rect import Rect
+from adafruit_display_shapes.roundrect import RoundRect
+from adafruit_display_shapes.circle import Circle
+from adafruit_display_shapes.triangle import Triangle
+from adafruit_display_shapes.line import Line
+
+group = displayio.Group()
+group.append(Rect(0, 0, 240, 240, fill=0x1B1340))                    # φόντο
+group.append(RoundRect(20, 20, 200, 60, 15, fill=0xFFD23F, outline=0xFFFFFF, stroke=3))
+group.append(Circle(60, 150, 40, fill=0xFF4FA3, outline=0xFFFFFF))   # x, y, ακτίνα
+group.append(Triangle(130, 200, 180, 110, 230, 200, fill=0x22D3EE))  # 3 γωνίες
+group.append(Line(0, 225, 239, 225, 0x3EE07A))                       # x0, y0, x1, y1, χρώμα
+board.DISPLAY.root_group = group
+
+while True:
+    pass</code></pre>
+  <div class="box challenge"><b>🏆 Πρόκληση</b><br>Ζωγράφισε ένα σπίτι: ένα Rect για τους τοίχους, μια στέγη Triangle, μια πόρτα RoundRect και έναν ήλιο Circle.</div>
+
+  <h3>Ζωντανά δεδομένα σε γράφημα: Sparkline</h3>
+  <p>Ένα <b>Sparkline</b> είναι ένα γράφημα γραμμής που κυλάει: κάθε <code>add_value()</code> προσθέτει ένα σημείο στα δεξιά. Κάνε λίγη φασαρία!</p>
+  <pre><code class="language-python">import board
+import displayio
+import terminalio
+from adafruit_display_text import label
+from adafruit_display_shapes.sparkline import Sparkline
+from adafruit_clue import clue
+
+graph = Sparkline(width=220, height=170, max_items=50, x=10, y=60, color=0x3EE07A)
+title = label.Label(terminalio.FONT, text="Sound level", scale=2, x=10, y=20)
+value = label.Label(terminalio.FONT, text="", scale=2, x=10, y=45, color=0xFFD23F)
+
+group = displayio.Group()
+group.append(graph)
+group.append(title)
+group.append(value)
+board.DISPLAY.root_group = group
+
+while True:
+    level = clue.sound_level
+    graph.add_value(level)          # πρόσθεσε ένα σημείο· το πιο παλιό φεύγει από την οθόνη
+    value.text = f"{level:.0f}"</code></pre>
+  <div class="box challenge"><b>🏆 Πρόκληση</b><br>Κάνε γράφημα το <code>clue.proximity</code> ή το <code>z</code> του επιταχυνσιόμετρου. Δοκίμασε <code>y_min=0, y_max=255</code> στο Sparkline ώστε το γράφημα να μην αλλάζει κλίμακα μόνο του.</div>
+</section>
+
+<section class="card" id="speed" style="--c:var(--red)">
+  <span class="tag">Μέρος 7</span>
+  <h2><span class="emoji">⚡</span>Κίνηση: γιατί το μικρό είναι γρήγορο</h2>
+  <p>Για να σταλούν και τα 57.600 pixel μέσα από τα καλώδια χρειάζεται χρόνος. Το displayio είναι έξυπνο: στέλνει μόνο το <b>κομμάτι που άλλαξε</b>. Αυτό το πρόγραμμα το μετράει. Κλείσε το <code>auto_refresh</code> και κάλεσε μόνος σου το <code>display.refresh()</code> για να ελέγχεις ακριβώς πότε ανανεώνεται η οθόνη:</p>
+  <pre><code class="language-python">import time
+import board
+import displayio
+import vectorio
+
+display = board.DISPLAY
+display.auto_refresh = False          # ΕΜΕΙΣ αποφασίζουμε πότε ανανεώνεται η οθόνη
+
+bg = displayio.Palette(1)
+bg[0] = 0x000000
+fg = displayio.Palette(1)
+fg[0] = 0xFF4FA3
+group = displayio.Group()
+back = vectorio.Rectangle(pixel_shader=bg, width=240, height=240, x=0, y=0)
+ball = vectorio.Circle(pixel_shader=fg, radius=10, x=20, y=120)
+group.append(back)
+group.append(ball)
+display.root_group = group
+
+start = time.monotonic()
+for i in range(100):                  # κίνησε κάτι ΜΙΚΡΟ
+    ball.x = 20 + i * 2
+    display.refresh()
+small = 100 / (time.monotonic() - start)
+
+start = time.monotonic()
+for i in range(10):                   # άλλαξε ΟΛΗ την οθόνη
+    bg[0] = 0x000000 if i % 2 else 0x222266
+    display.refresh()
+full = 10 / (time.monotonic() - start)
+
+print(f"small ball: {small:.0f} frames per second")
+print(f"whole screen: {full:.1f} frames per second")
+display.auto_refresh = True</code></pre>
+  <p>Στο δικό μας CLUE τύπωσε:</p>
+  <pre><code class="language-bash">small ball: 159 frames per second
+whole screen: 3.4 frames per second</code></pre>
+  <div class="box tip"><b>🎮 Συμβουλή για δημιουργούς παιχνιδιών</b><br>Κίνησε μικρά πράγματα πάνω σε ένα φόντο που μένει ακίνητο. Αν αλλάζεις όλη την οθόνη μαζί (μια φωτογραφία σε όλη την οθόνη, ένα νέο χρώμα φόντου), είναι περίπου <b>50 φορές πιο αργό</b>. Γι' αυτό τα κινούμενα GIF από το <a href="picture.html">Picture Maker</a> παίζουν με περίπου 3 καρέ το δευτερόλεπτο.</div>
+</section>
+
+<section class="card" id="rotate" style="--c:var(--cyan)">
+  <span class="tag">Μέρος 8</span>
+  <h2><span class="emoji">🔄</span>Περιστροφή και χαμήλωμα φωτός</h2>
+  <p>Το <code>display.rotation</code> γυρίζει τα πάντα κατά 0, 90, 180 ή 270 μοίρες (τέλειο αν το CLUE σου είναι στερεωμένο στο πλάι). Το <code>display.brightness</code> ρυθμίζει τον οπισθοφωτισμό από 0.0 (σβηστός) έως 1.0 (στο φουλ), και το χαμήλωμα γλιτώνει μπαταρία!</p>
+  <pre><code class="language-python">import time
+import board
+from adafruit_clue import clue
+
+display = board.DISPLAY
+screen = clue.simple_text_display(title="Turn me!", text_scale=3)
+screen[1].text = "Hello!"
+screen.show()
+
+for angle in (90, 180, 270, 0):       # γύρνα την εικόνα
+    display.rotation = angle
+    print("rotation", display.rotation)
+    time.sleep(1)
+
+for level in (0.5, 0.1, 1.0):         # χαμήλωσε τον οπισθοφωτισμό
+    display.brightness = level
+    print("brightness", display.brightness)
+    time.sleep(1)</code></pre>
+</section>
+
+<section class="card" id="memory" style="--c:var(--purple)">
+  <span class="tag">Μέρος 9</span>
+  <h2><span class="emoji">🧮</span>Μνήμη: γιατί οι εικόνες έχουν τόσο λίγα χρώματα</h2>
+  <p>Ένα bitmap χρειάζεται αρκετά <b>bit</b> ανά pixel για να χωράει ο μεγαλύτερος αριθμός χρώματος. Περισσότερα χρώματα = περισσότερα bit = περισσότερη μνήμη:</p>
+  <div class="tbl"><table>
+    <tr><th>Χρώματα στην παλέτα</th><th>Bit ανά pixel</th><th>Όλη η οθόνη (240 × 240)</th></tr>
+    <tr><td>2</td><td>1</td><td>7,2 KB</td></tr>
+    <tr><td>3 – 4</td><td>2</td><td>14,4 KB</td></tr>
+    <tr><td>5 – 16</td><td>4</td><td>28,8 KB</td></tr>
+    <tr><td>17 – 256</td><td>8</td><td>57,6 KB</td></tr>
+    <tr><td>65.536 (κάθε χρώμα RGB565)</td><td>16</td><td>115,2 KB 😱 πολύ μεγάλο!</td></tr>
+  </table></div>
+  <p>Πόση μνήμη έχει το CLUE για το πρόγραμμά σου; Ας τη μετρήσουμε:</p>
+  <pre><code class="language-python">import gc
+import displayio
+
+gc.collect()
+before = gc.mem_free()
+print("free memory:", before, "bytes")
+
+for colors in (2, 4, 16, 256):
+    gc.collect()
+    start = gc.mem_free()
+    bitmap = displayio.Bitmap(240, 240, colors)
+    gc.collect()
+    print(colors, "colors cost", start - gc.mem_free(), "bytes")
+    del bitmap</code></pre>
+  <p>Το δικό μας CLUE τύπωσε <b>free memory: 129952 bytes</b> (περίπου 127 KB), και το κόστος ταίριαξε με τον πίνακα: 8.064 bytes για 2 χρώματα, 16.432 για 4, 28.720 για 16 και 59.440 για 256.</p>
+  <div class="box warn"><b>🐘 Ο μεγάλος φαγάς</b><br>Το ίδιο το <code>from adafruit_clue import clue</code> τρώει περίπου <b>52 KB</b>, πάνω από το ένα τρίτο της μνήμης! Προγράμματα που μόνο ζωγραφίζουν εικόνες καλύτερα να το παραλείπουν και να χρησιμοποιούν κατευθείαν το <code>board.DISPLAY</code>. Αυτό κάνει και το Picture Maker.</div>
+  <p>Εικόνες με 17+ χρώματα σε πλήρες μέγεθος χωράνε, αλλά στο τσακ. Γι' αυτό το <a href="picture.html">Picture Maker</a> χρησιμοποιεί κόλπα: λιγότερα χρώματα, ένα μικρότερο bitmap μεγεθυσμένο με το <code>scale</code>, και <b>στρίμωγμα</b> (συμπίεση) των δεδομένων των pixel μέσα στον κώδικα.</p>
+</section>
+
+<section class="card" id="files" style="--c:var(--green)">
+  <span class="tag">Μέρος 10</span>
+  <h2><span class="emoji">🖼️</span>Εικόνες από αρχεία</h2>
+  <p>Μια εικόνα δεν χρειάζεται να ζει στη μνήμη. Το <code>displayio.OnDiskBitmap</code> διαβάζει ένα αρχείο <b>.bmp</b> κατευθείαν από τον δίσκο CIRCUITPY την ώρα που ζωγραφίζει. Δεν θέλει σχεδόν καθόλου μνήμη, αλλά είναι πιο αργό (μια εικόνα σε όλη την οθόνη θέλει περίπου 2 δευτερόλεπτα για να εμφανιστεί στο δικό μας CLUE).</p>
+  <pre><code class="language-python">import board
+import displayio
+
+picture = displayio.OnDiskBitmap("/picture.bmp")
+tile = displayio.TileGrid(picture, pixel_shader=picture.pixel_shader)
+group = displayio.Group()
+group.append(tile)
+board.DISPLAY.root_group = group
+
+while True:
+    pass</code></pre>
+  <p>Πού θα βρεις ένα .bmp στο μέγεθος του CLUE; Φτιάξε ένα με το <b>Picture Maker</b>!</p>
+  <p><a class="btn" href="picture.html">🖼️ Άνοιξε το Picture Maker</a></p>
+</section>
+</main>
+
+<footer>Φτιαγμένο με 💜 για νέους makers · <a href="./">Πίσω στο CLUE Quest</a></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="../app.js"></script>
+<script src="../screen.js"></script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screen Lab · CLUE Quest</title>
+<meta name="description" content="How the Adafruit CLUE's 240x240 screen works: pixels, coordinates, colors, displayio, drawing shapes, animation speed and memory.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E📺%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="./">CLUE Quest</a>
+  <nav><a href="./">Missions</a><a href="#coords">Coordinates</a><a href="#colors">Colors</a><a href="#draw">Drawing</a><a href="#memory">Memory</a><a href="picture.html">Picture Maker</a></nav>
+  <a class="lang" href="el/screen.html" lang="el">🌍 Ελληνικά</a>
+</header>
+
+<main class="wrap">
+  <div class="pm-hero">
+    <span class="sticker">Deep dive 🔬</span>
+    <h1>Screen <span>Lab</span></h1>
+    <p class="lead">How does the CLUE turn your code into pictures? Let's zoom all the way in: pixels, coordinates, colors, layers, drawing, animation and memory. Every example here was tested on a real CLUE.</p>
+  </div>
+
+<section class="card" id="pixels" style="--c:var(--cyan)">
+  <span class="tag">Part 1</span>
+  <h2><span class="emoji">🔍</span>A screen is a grid of tiny lights</h2>
+  <p>The CLUE's screen is a <b>1.3 inch color TFT</b>. Up close it's a grid of <b>240 × 240 = 57,600 pixels</b>. Each pixel is really 3 even tinier lights, <b style="color:#e11d48">red</b>, <b style="color:#16a34a">green</b> and <b style="color:#2563eb">blue</b>, that are too small for your eyes to see separately, so they blend into one color.</p>
+  <div class="grid">
+    <div class="part"><span class="big">🧠</span><b>The brain</b><small>The nRF52840 chip runs your Python code</small></div>
+    <div class="part"><span class="big">〰️</span><b>The wires (SPI)</b><small>Pixels travel to the screen one after another, super fast</small></div>
+    <div class="part"><span class="big">🎛️</span><b>The screen chip (ST7789)</b><small>Remembers every pixel and keeps lighting it</small></div>
+    <div class="part"><span class="big">💡</span><b>The backlight</b><small>A light behind everything: that's the brightness</small></div>
+  </div>
+  <p>In CircuitPython the screen is called <code>board.DISPLAY</code>. You never talk to the wires yourself: a system called <b>displayio</b> works out which pixels changed and sends only those. Remember that, it's the secret behind <a href="#speed">fast animation</a>!</p>
+</section>
+
+<section class="card" id="coords" style="--c:var(--yellow)">
+  <span class="tag">Part 2</span>
+  <h2><span class="emoji">📍</span>Coordinates: where is a pixel?</h2>
+  <p>Every pixel has an address <b>(x, y)</b>. <b>x</b> counts from the <b>left</b>, <b>y</b> counts from the <b>top</b>. The first pixel is <b>(0, 0)</b> in the <b>top-left</b> corner, and the last one is <b>(239, 239)</b> in the bottom-right.</p>
+  <div class="box warn"><b>🐱 Scratch fans, careful!</b><br>In Scratch, (0, 0) is in the <b>middle</b> of the stage and y goes <b>up</b>. On the CLUE, (0, 0) is in the <b>top-left corner</b> and y goes <b>down</b>. To convert: <code>clue_x = scratch_x + 120</code> and <code>clue_y = 120 - scratch_y</code>.</div>
+  <p><b>Try it:</b> move your mouse (or finger) over the screen below.</p>
+  <div class="lab">
+    <canvas id="coordCanvas" width="240" height="240" aria-label="Coordinate explorer"></canvas>
+    <div class="lab-read">
+      <p>CLUE: <b id="cx">x = ?, y = ?</b></p>
+      <p>Scratch: <b id="sx">x = ?, y = ?</b></p>
+      <p><small>The red lines are every 40 pixels. The middle of the screen is (120, 120).</small></p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="colors" style="--c:var(--pink)">
+  <span class="tag">Part 3</span>
+  <h2><span class="emoji">🎨</span>Colors: mixing light</h2>
+  <p>Screens mix <b>light</b>, not paint, so red + green makes <b style="color:#ca8a04">yellow</b>, and all three at full power make <b>white</b>. In code a color is 3 numbers from 0 to 255: <code>(red, green, blue)</code>. You'll also see them written in <b>hex</b> (base 16) like <code>0xFF4FA3</code>: two digits for red, two for green, two for blue.</p>
+  <div class="lab mixer">
+    <div>
+      <label>Red <input type="range" id="mr" min="0" max="255" value="255"></label>
+      <label>Green <input type="range" id="mg" min="0" max="255" value="79"></label>
+      <label>Blue <input type="range" id="mb" min="0" max="255" value="163"></label>
+      <p><code id="mTuple"></code> &nbsp; <code id="mHex"></code></p>
+      <p>RGB565: <code id="m565"></code></p>
+    </div>
+    <div class="swatches">
+      <div><div class="sw" id="sw24"></div><small>What you asked for</small></div>
+      <div><div class="sw" id="sw16"></div><small>What the CLUE shows</small></div>
+    </div>
+  </div>
+  <h3>The secret: the screen only has 65,536 colors</h3>
+  <p>Your code can ask for 16.7 million colors (256 × 256 × 256), but the CLUE's screen stores each pixel in <b>16 bits</b>: <b style="color:#e11d48">5 bits for red</b>, <b style="color:#16a34a">6 bits for green</b> and <b style="color:#2563eb">5 bits for blue</b>. That's called <b>RGB565</b>. Green gets the extra bit because human eyes are best at seeing different greens! So very close colors can come out exactly the same. Watch the RGB565 box above as you nudge a slider by 1.</p>
+</section>
+
+<section class="card" id="layers" style="--c:var(--purple)">
+  <span class="tag">Part 4</span>
+  <h2><span class="emoji">🎂</span>displayio: a layer cake</h2>
+  <p>You don't draw straight onto the screen. You build a <b>stack of layers</b>, and displayio paints them in order, bottom to top, like stickers on a page:</p>
+  <div class="cake">
+    <div style="--c:#ffd23f"><b>board.DISPLAY</b><small>the real screen</small></div>
+    <div style="--c:#ff8a3d"><b>root_group</b><small>the one group the screen shows</small></div>
+    <div style="--c:#ff4fa3"><b>Group</b><small>a layer; can be moved (x, y) and zoomed (scale)</small></div>
+    <div style="--c:#8b5cf6"><b>TileGrid · Label · Shape</b><small>things you can see</small></div>
+    <div style="--c:#22d3ee"><b>Bitmap + Palette</b><small>the pixels (numbers) + the paint pots (colors)</small></div>
+  </div>
+  <p>A <b>Bitmap</b> is like paint-by-numbers: each pixel stores a small <b>number</b> (0, 1, 2…), and the <b>Palette</b> says which color each number means. Change one palette color and every pixel with that number changes at once. That's a cheap magic trick for flashing and fading!</p>
+</section>
+
+<section class="card" id="plot" style="--c:var(--green)">
+  <span class="tag">Part 5</span>
+  <h2><span class="emoji">✏️</span>Plot pixels yourself</h2>
+  <p>Here's the whole layer cake in code. <code>bitmap[x, y] = number</code> colors ONE pixel.</p>
+  <pre><code class="language-python">import random
+import board
+import displayio
+
+bitmap = displayio.Bitmap(240, 240, 4)   # 240 x 240 pixels, up to 4 colors
+palette = displayio.Palette(4)           # the 4 paint pots
+palette[0] = 0x000022                    # 0 = night sky
+palette[1] = 0xFFFFFF                    # 1 = white
+palette[2] = 0xFFD23F                    # 2 = yellow
+palette[3] = 0xFF4FA3                    # 3 = pink
+
+group = displayio.Group()
+group.append(displayio.TileGrid(bitmap, pixel_shader=palette))
+board.DISPLAY.root_group = group
+
+bitmap[120, 120] = 3                     # ONE pink pixel in the middle
+
+for i in range(300):                     # 300 random stars
+    x = random.randint(0, 239)
+    y = random.randint(0, 239)
+    bitmap[x, y] = random.choice([1, 2])
+
+for x in range(240):                     # a yellow line across the bottom
+    bitmap[x, 200] = 2
+
+while True:
+    pass</code></pre>
+  <h3>Zoom trick: pixel art</h3>
+  <p>A <code>Group</code> can <b>scale</b> everything inside it. Draw a tiny 8 × 8 picture from a <a href="./#python">list of strings</a>, then blow it up 30 times so it fills the screen:</p>
+  <pre><code class="language-python">import board
+import displayio
+
+ART = [
+    "..####..",
+    ".#....#.",
+    "#.#..#.#",
+    "#......#",
+    "#.#..#.#",
+    "#..##..#",
+    ".#....#.",
+    "..####..",
+]
+
+palette = displayio.Palette(2)
+palette[0] = 0xFFD23F      # "." = yellow
+palette[1] = 0x1B1340      # "#" = dark ink
+
+bitmap = displayio.Bitmap(8, 8, 2)
+for y, row in enumerate(ART):          # enumerate gives the position AND the item
+    for x, ch in enumerate(row):
+        if ch == "#":
+            bitmap[x, y] = 1
+
+group = displayio.Group(scale=30)      # every pixel becomes a 30 x 30 block!
+group.append(displayio.TileGrid(bitmap, pixel_shader=palette))
+board.DISPLAY.root_group = group
+
+while True:
+    pass</code></pre>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Draw your own 8 × 8 sprite (a heart, a ghost, a space invader…). Add a third color: make the palette 3 long and use another letter like <code>"o"</code>.</div>
+</section>
+
+<section class="card" id="draw" style="--c:var(--orange)">
+  <span class="tag">Part 6</span>
+  <h2><span class="emoji">🔷</span>Drawing shapes: 3 toolboxes</h2>
+  <p>Plotting one pixel at a time is slow for big shapes. There are three toolboxes that draw shapes for you:</p>
+  <div class="tbl"><table>
+    <tr><th>Toolbox</th><th>Install?</th><th>Best for</th></tr>
+    <tr><td><code>bitmaptools</code></td><td>Built in ✅</td><td>Drawing <b>into</b> a bitmap: lines, circles, boxes, polygons, paint-bucket fill</td></tr>
+    <tr><td><code>vectorio</code></td><td>Built in ✅</td><td>Shapes that <b>move</b>: circles, rectangles, polygons. Fast and uses little memory</td></tr>
+    <tr><td><code>adafruit_display_shapes</code></td><td>Library 📁</td><td>Easy shapes with outlines: Rect, RoundRect, Circle, Triangle, Line, Polygon, and <b>Sparkline</b> graphs</td></tr>
+  </table></div>
+
+  <h3>bitmaptools: draw into a bitmap</h3>
+  <pre><code class="language-python">import array
+import board
+import displayio
+import bitmaptools
+
+bitmap = displayio.Bitmap(240, 240, 5)
+palette = displayio.Palette(5)
+palette[0] = 0x000000   # black
+palette[1] = 0xFF4FA3   # pink
+palette[2] = 0x22D3EE   # cyan
+palette[3] = 0xFFD23F   # yellow
+palette[4] = 0x3EE07A   # green
+
+group = displayio.Group()
+group.append(displayio.TileGrid(bitmap, pixel_shader=palette))
+board.DISPLAY.root_group = group
+
+bitmaptools.fill_region(bitmap, 20, 20, 100, 100, 1)       # box: x1, y1, x2, y2, color
+bitmaptools.draw_line(bitmap, 0, 239, 239, 0, 2)           # line from corner to corner
+bitmaptools.draw_circle(bitmap, 170, 70, 40, 3)            # circle: x, y, radius, color
+bitmaptools.boundary_fill(bitmap, 170, 70, 3, 0)           # paint bucket! fill the inside
+
+xs = array.array("h", [40, 120, 80])                        # a triangle's corners
+ys = array.array("h", [220, 220, 150])
+bitmaptools.draw_polygon(bitmap, xs, ys, 4)
+
+while True:
+    pass</code></pre>
+  <p><code>array.array("h", [...])</code> is a compact list of whole numbers, which is what <code>draw_polygon</code> wants for the corner positions.</p>
+
+  <h3>vectorio: shapes that move (bouncing ball!)</h3>
+  <p>Each vectorio shape has its own <code>x</code> and <code>y</code>. Change them and the shape moves. displayio only redraws the tiny area around the ball.</p>
+  <pre><code class="language-python">import time
+import board
+import displayio
+import vectorio
+
+sky = displayio.Palette(1)
+sky[0] = 0x1B1340
+pink = displayio.Palette(1)
+pink[0] = 0xFF4FA3
+
+group = displayio.Group()
+group.append(vectorio.Rectangle(pixel_shader=sky, width=240, height=240, x=0, y=0))
+ball = vectorio.Circle(pixel_shader=pink, radius=15, x=120, y=120)
+group.append(ball)
+board.DISPLAY.root_group = group
+
+dx, dy = 3, 2                     # how far the ball moves each step
+while True:
+    ball.x += dx
+    ball.y += dy
+    if ball.x &lt; 15 or ball.x &gt; 225:   # hit a side wall? bounce!
+        dx = -dx
+    if ball.y &lt; 15 or ball.y &gt; 225:   # hit the top or bottom? bounce!
+        dy = -dy
+    time.sleep(0.01)</code></pre>
+
+  <h3>adafruit_display_shapes: shapes with outlines</h3>
+  <p>This one is a library. Copy the <code>adafruit_display_shapes</code> folder from the <a href="./#setup">library bundle</a> into <code>CIRCUITPY/lib</code>, just like in Setup Part B.</p>
+  <pre><code class="language-python">import board
+import displayio
+from adafruit_display_shapes.rect import Rect
+from adafruit_display_shapes.roundrect import RoundRect
+from adafruit_display_shapes.circle import Circle
+from adafruit_display_shapes.triangle import Triangle
+from adafruit_display_shapes.line import Line
+
+group = displayio.Group()
+group.append(Rect(0, 0, 240, 240, fill=0x1B1340))                    # background
+group.append(RoundRect(20, 20, 200, 60, 15, fill=0xFFD23F, outline=0xFFFFFF, stroke=3))
+group.append(Circle(60, 150, 40, fill=0xFF4FA3, outline=0xFFFFFF))   # x, y, radius
+group.append(Triangle(130, 200, 180, 110, 230, 200, fill=0x22D3EE))  # 3 corners
+group.append(Line(0, 225, 239, 225, 0x3EE07A))                       # x0, y0, x1, y1, color
+board.DISPLAY.root_group = group
+
+while True:
+    pass</code></pre>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Draw a house: a Rect for the walls, a Triangle roof, a RoundRect door and a Circle sun.</div>
+
+  <h3>Plot live data: Sparkline graphs</h3>
+  <p>A <b>Sparkline</b> is a line graph that scrolls: every <code>add_value()</code> adds a point on the right. Make some noise!</p>
+  <pre><code class="language-python">import board
+import displayio
+import terminalio
+from adafruit_display_text import label
+from adafruit_display_shapes.sparkline import Sparkline
+from adafruit_clue import clue
+
+graph = Sparkline(width=220, height=170, max_items=50, x=10, y=60, color=0x3EE07A)
+title = label.Label(terminalio.FONT, text="Sound level", scale=2, x=10, y=20)
+value = label.Label(terminalio.FONT, text="", scale=2, x=10, y=45, color=0xFFD23F)
+
+group = displayio.Group()
+group.append(graph)
+group.append(title)
+group.append(value)
+board.DISPLAY.root_group = group
+
+while True:
+    level = clue.sound_level
+    graph.add_value(level)          # add a point; the oldest one slides off
+    value.text = f"{level:.0f}"</code></pre>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Graph <code>clue.proximity</code> or the accelerometer's <code>z</code> instead. Try <code>y_min=0, y_max=255</code> in the Sparkline so the graph doesn't rescale itself.</div>
+</section>
+
+<section class="card" id="speed" style="--c:var(--red)">
+  <span class="tag">Part 7</span>
+  <h2><span class="emoji">⚡</span>Animation: why small is fast</h2>
+  <p>Sending all 57,600 pixels down the wires takes time. displayio is smart: it only sends the <b>part that changed</b>. This program measures it. Turn off <code>auto_refresh</code> and call <code>display.refresh()</code> yourself to control exactly when the screen updates:</p>
+  <pre><code class="language-python">import time
+import board
+import displayio
+import vectorio
+
+display = board.DISPLAY
+display.auto_refresh = False          # WE decide when to update the screen
+
+bg = displayio.Palette(1)
+bg[0] = 0x000000
+fg = displayio.Palette(1)
+fg[0] = 0xFF4FA3
+group = displayio.Group()
+back = vectorio.Rectangle(pixel_shader=bg, width=240, height=240, x=0, y=0)
+ball = vectorio.Circle(pixel_shader=fg, radius=10, x=20, y=120)
+group.append(back)
+group.append(ball)
+display.root_group = group
+
+start = time.monotonic()
+for i in range(100):                  # move a SMALL thing
+    ball.x = 20 + i * 2
+    display.refresh()
+small = 100 / (time.monotonic() - start)
+
+start = time.monotonic()
+for i in range(10):                   # change the WHOLE screen
+    bg[0] = 0x000000 if i % 2 else 0x222266
+    display.refresh()
+full = 10 / (time.monotonic() - start)
+
+print(f"small ball: {small:.0f} frames per second")
+print(f"whole screen: {full:.1f} frames per second")
+display.auto_refresh = True</code></pre>
+  <p>On our CLUE it printed:</p>
+  <pre><code class="language-bash">small ball: 159 frames per second
+whole screen: 3.4 frames per second</code></pre>
+  <div class="box tip"><b>🎮 Game-maker tip</b><br>Move small things over a background that stays still. Changing the whole screen at once (a full-screen photo, a new background color) is about <b>50 times slower</b>. That's why GIF animations from the <a href="picture.html">Picture Maker</a> play at about 3 frames per second.</div>
+</section>
+
+<section class="card" id="rotate" style="--c:var(--cyan)">
+  <span class="tag">Part 8</span>
+  <h2><span class="emoji">🔄</span>Rotate and dim</h2>
+  <p><code>display.rotation</code> turns everything by 0, 90, 180 or 270 degrees (great if your CLUE is mounted sideways). <code>display.brightness</code> sets the backlight from 0.0 (off) to 1.0 (full), and dimming saves battery!</p>
+  <pre><code class="language-python">import time
+import board
+from adafruit_clue import clue
+
+display = board.DISPLAY
+screen = clue.simple_text_display(title="Turn me!", text_scale=3)
+screen[1].text = "Hello!"
+screen.show()
+
+for angle in (90, 180, 270, 0):       # rotate the picture
+    display.rotation = angle
+    print("rotation", display.rotation)
+    time.sleep(1)
+
+for level in (0.5, 0.1, 1.0):         # dim the backlight
+    display.brightness = level
+    print("brightness", display.brightness)
+    time.sleep(1)</code></pre>
+</section>
+
+<section class="card" id="memory" style="--c:var(--purple)">
+  <span class="tag">Part 9</span>
+  <h2><span class="emoji">🧮</span>Memory: why pictures use so few colors</h2>
+  <p>A bitmap needs enough <b>bits</b> per pixel to store the biggest color number. More colors = more bits = more memory:</p>
+  <div class="tbl"><table>
+    <tr><th>Colors in the palette</th><th>Bits per pixel</th><th>Full screen (240 × 240)</th></tr>
+    <tr><td>2</td><td>1</td><td>7.2 KB</td></tr>
+    <tr><td>3 – 4</td><td>2</td><td>14.4 KB</td></tr>
+    <tr><td>5 – 16</td><td>4</td><td>28.8 KB</td></tr>
+    <tr><td>17 – 256</td><td>8</td><td>57.6 KB</td></tr>
+    <tr><td>65,536 (every RGB565 color)</td><td>16</td><td>115.2 KB 😱 too big!</td></tr>
+  </table></div>
+  <p>How much memory does the CLUE have for your program? Let's measure:</p>
+  <pre><code class="language-python">import gc
+import displayio
+
+gc.collect()
+before = gc.mem_free()
+print("free memory:", before, "bytes")
+
+for colors in (2, 4, 16, 256):
+    gc.collect()
+    start = gc.mem_free()
+    bitmap = displayio.Bitmap(240, 240, colors)
+    gc.collect()
+    print(colors, "colors cost", start - gc.mem_free(), "bytes")
+    del bitmap</code></pre>
+  <p>Our CLUE printed <b>free memory: 129952 bytes</b> (about 127 KB), and the costs matched the table: 8,064 bytes for 2 colors, 16,432 for 4, 28,720 for 16 and 59,440 for 256.</p>
+  <div class="box warn"><b>🐘 The big one</b><br><code>from adafruit_clue import clue</code> itself uses about <b>52 KB</b>, over a third of the memory! Programs that only draw pictures should skip it and use <code>board.DISPLAY</code> directly. That's what the Picture Maker does.</div>
+  <p>Pictures with 17+ colors at full size still fit, but it's tight. So the <a href="picture.html">Picture Maker</a> uses tricks: fewer colors, a smaller bitmap zoomed up with <code>scale</code>, and <b>squeezing</b> (compressing) the pixel data inside the code.</p>
+</section>
+
+<section class="card" id="files" style="--c:var(--green)">
+  <span class="tag">Part 10</span>
+  <h2><span class="emoji">🖼️</span>Pictures from files</h2>
+  <p>A picture doesn't have to live in memory. <code>displayio.OnDiskBitmap</code> reads a <b>.bmp</b> file straight from the CIRCUITPY drive while it draws. It uses almost no memory but is slower (a full-screen picture takes about 2 seconds to appear on our CLUE).</p>
+  <pre><code class="language-python">import board
+import displayio
+
+picture = displayio.OnDiskBitmap("/picture.bmp")
+tile = displayio.TileGrid(picture, pixel_shader=picture.pixel_shader)
+group = displayio.Group()
+group.append(tile)
+board.DISPLAY.root_group = group
+
+while True:
+    pass</code></pre>
+  <p>Where do you get a CLUE-sized .bmp? Make one with the <b>Picture Maker</b>!</p>
+  <p><a class="btn" href="picture.html">🖼️ Open the Picture Maker</a></p>
+</section>
+</main>
+
+<footer>Made with 💜 for young makers · <a href="./">Back to CLUE Quest</a></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="app.js"></script>
+<script src="screen.js"></script>
+</body>
+</html>

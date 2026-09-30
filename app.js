@@ -8,6 +8,7 @@ const btns = [...document.querySelectorAll(".done-btn")];
 const total = btns.reduce((s, b) => s + +b.dataset.xp, 0);
 
 function render() {
+  if (!document.getElementById("xpText")) return;   // pages without the XP bar (Screen Lab)
   const done = load();
   let xp = 0;
   btns.forEach(b => {
@@ -45,7 +46,7 @@ btns.forEach(b => b.addEventListener("click", e => {
   save(done); render();
   if (done.length === btns.length) document.getElementById("trophy").scrollIntoView();
 }));
-document.getElementById("reset").addEventListener("click", () => { save([]); render(); });
+document.getElementById("reset")?.addEventListener("click", () => { save([]); render(); });
 
 // copy buttons on code blocks
 document.querySelectorAll("pre").forEach(pre => {

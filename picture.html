@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picture Maker · CLUE Quest</title>
+<meta name="description" content="Turn any photo or GIF into CircuitPython code that shows it full screen on the Adafruit CLUE.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🖼️%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="./">CLUE Quest</a>
+  <nav><a href="./">Missions</a><a href="screen.html">Screen Lab</a><a href="picture.html">Picture Maker</a></nav>
+  <a class="lang" href="el/picture.html" lang="el">🌍 Ελληνικά</a>
+</header>
+
+<main class="wrap">
+  <div class="pm-hero">
+    <span class="sticker">App 🖼️</span>
+    <h1>Picture <span>Maker</span></h1>
+    <p class="lead">Pick a photo, a GIF or snap a selfie. The app shrinks it to fit the CLUE's 240 × 240 screen, picks the best colors and writes the CircuitPython code for you. Want to know how it works? Read the <a href="screen.html">Screen Lab</a>.</p>
+  </div>
+
+  <div class="pm-grid">
+    <section class="card" style="--c:var(--cyan)" id="controls">
+      <span class="tag">1 · Picture</span>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*">
+        <span class="big">📂</span><b>Drop a photo or GIF here</b><small>or click to choose one</small>
+      </label>
+      <p class="pm-row"><button class="btn small" id="camBtn" type="button">📷 Use the camera</button> <small id="srcInfo"></small></p>
+      <div id="camBox" hidden><video id="video" autoplay playsinline muted></video><button class="btn small" id="snapBtn" type="button">📸 Snap!</button></div>
+
+      <h3>2 · Settings</h3>
+      <label class="pm-field">Size
+        <select id="size">
+          <option value="240">240 × 240: sharp (every pixel)</option>
+          <option value="120" selected>120 × 120: chunky (each pixel ×2)</option>
+          <option value="80">80 × 80: retro (each pixel ×3)</option>
+          <option value="60">60 × 60: pixel art (each pixel ×4)</option>
+        </select></label>
+      <label class="pm-field">Colors: <b id="colorsVal"></b>
+        <input type="range" id="colors" min="2" max="256" value="16"></label>
+      <label class="pm-field">Fit
+        <select id="fit">
+          <option value="fill">Fill the screen (crop the edges)</option>
+          <option value="fit">Show everything (add bars)</option>
+          <option value="stretch">Stretch (squash it)</option>
+        </select></label>
+      <label class="pm-field">Bar color <input type="color" id="bg" value="#000000"></label>
+      <label class="pm-check"><input type="checkbox" id="dither" checked> Dithering (mix dots to fake more colors)</label>
+      <label class="pm-field" id="frameRow" hidden>GIF frames to use: <b id="framesVal"></b>
+        <input type="range" id="frames" min="1" max="30" value="8"></label>
+
+      <h3>3 · How to send it</h3>
+      <label class="pm-check"><input type="radio" name="mode" value="code" checked> <span><b>Code only</b>: paste into code.py, nothing else to upload. Works for GIFs too.</span></label>
+      <label class="pm-check"><input type="radio" name="mode" value="file"> <span><b>Picture file + code</b>: best quality (up to 256 colors at 240 × 240), stills only.</span></label>
+      <button class="btn small" id="autoBtn" type="button">✨ Auto-fit to the CLUE</button>
+    </section>
+
+    <section class="card" style="--c:var(--pink)">
+      <span class="tag">Preview</span>
+      <div class="clue-frame"><canvas id="preview" width="480" height="480"></canvas></div>
+      <p class="status" id="status"></p>
+      <div class="meter"><span>code.py size</span><div class="bar"><div id="sizeBar"></div></div><small id="sizeTxt"></small></div>
+      <div class="meter"><span>CLUE memory</span><div class="bar"><div id="ramBar"></div></div><small id="ramTxt"></small></div>
+      <p><small>Colors in the palette: <b id="palInfo">–</b>. The preview uses the screen's real RGB565 colors.</small></p>
+    </section>
+  </div>
+
+  <section class="card" style="--c:var(--yellow)">
+    <span class="tag">4 · Your code</span>
+    <p class="pm-row">
+      <button class="btn small" id="copyBtn" type="button">📋 Copy code</button>
+      <button class="btn small" id="dlBtn" type="button">💾 Download code.py</button>
+      <button class="btn small" id="bmpBtn" type="button" hidden>🖼️ Download picture.bmp</button>
+    </p>
+    <textarea id="code" readonly spellcheck="false" aria-label="Generated CircuitPython code"></textarea>
+    <h3>Put it on your CLUE</h3>
+    <ol class="steps">
+      <li>Connect in <a href="https://code.circuitpython.org/" target="_blank" rel="noopener">code.circuitpython.org</a> (see <a href="./#setup">Setup, Part C</a>) and open <code>code.py</code>.</li>
+      <li><b>Code only:</b> select everything in code.py, paste your code, click <b>Save + Run</b>. Done!</li>
+      <li><b>Picture file:</b> click <b>Open</b>, then the <b>upload</b> button (arrow pointing up) in the file window and upload <code>picture.bmp</code>. Then paste the code into code.py and <b>Save + Run</b>.</li>
+    </ol>
+    <div class="box tip"><b>💡 Why so few colors?</b><br>Each color costs memory, and the CLUE has only about 70 KB free for your program. Big photos need dithering to look good, but dithered pictures are harder to squeeze. The meters tell you when it fits. The <a href="screen.html#memory">Screen Lab</a> explains the math.</div>
+  </section>
+</main>
+
+<footer>Made with 💜 for young makers · <a href="./">Back to CLUE Quest</a></footer>
+<script src="picture.js"></script>
+</body>
+</html>
