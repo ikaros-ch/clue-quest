@@ -7,7 +7,7 @@ function drawGrid(px, py) {
   g.fillStyle = "#1b1340"; g.fillRect(0, 0, 240, 240);
   g.fillStyle = "#ff4d4d88";
   for (let i = 0; i <= 240; i += 40) { g.fillRect(i, 0, 1, 240); g.fillRect(0, i, 240, 1); }
-  g.fillStyle = "#ffd23f"; g.font = "bold 11px Nunito, sans-serif";
+  g.fillStyle = "#ffd23f"; g.font = "bold 11px Ubuntu, sans-serif";
   g.fillText("(0, 0)", 3, 12); g.fillText("(239, 239)", 178, 235);
   if (px === undefined) return;
   g.fillStyle = "#22d3ee"; g.fillRect(px, 0, 1, 240); g.fillRect(0, py, 240, 1);
