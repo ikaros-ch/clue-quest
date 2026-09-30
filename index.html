@@ -75,7 +75,7 @@
     <div class="part"><span class="big">🔴⚪</span><b>Red LED + white LEDs</b><small>A status light and two mini flashlights</small></div>
     <div class="part"><span class="big">🔊</span><b>Speaker</b><small>Beeps, tones and tunes</small></div>
     <div class="part"><span class="big">🎤</span><b>Microphone</b><small>Hears how loud it is</small></div>
-    <div class="part"><span class="big">👆</span><b>Touch pads 0, 1, 2</b><small>The big gold pads on the bottom edge</small></div>
+    <div class="part"><span class="big">👆</span><b>Touch pads 0, 1, 2</b><small>Gold pads on the bottom edge. Screen facing you: 0, 1, 2, 3V, GND from left to right</small></div>
     <div class="part"><span class="big">🎢</span><b>Accelerometer + gyro</b><small>Feels tilt, shakes and spins</small></div>
     <div class="part"><span class="big">🧭</span><b>Magnetometer</b><small>Senses magnets (a compass!)</small></div>
     <div class="part"><span class="big">✋</span><b>Proximity, gesture &amp; color</b><small>The little black sensor at the top</small></div>
@@ -94,13 +94,14 @@
 <section class="card" id="python" style="--c:var(--yellow)">
   <span class="tag">Level 1</span>
   <h2><span class="emoji">🐍</span>Python in 10 minutes</h2>
-  <p><b>CircuitPython</b> is Python made for tiny boards. If you already know Python, skim this and move on. If not, these are the only ideas you need for the whole quest. You'll try them for real once the CLUE is set up.</p>
+  <p><b>CircuitPython</b> is Python made for tiny boards. If you already know Python, skim this and move on. If not, these are the only ideas you need for the whole quest. After Setup, paste them into the REPL (see Troubleshooting) or into <code>code.py</code>.</p>
 
   <h3>1. Comments: notes for humans</h3>
   <p>Anything after <code>#</code> is ignored by the computer.</p>
   <pre><code class="language-python"># This is a comment. The CLUE skips it.</code></pre>
 
-  <h3>2. print(): talk to the computer screen</h3>
+  <h3>2. print(): send a message</h3>
+  <p>Shows a message in the Serial console (and on the CLUE's own screen until your program draws something else).</p>
   <pre><code class="language-python">print("Hello!")
 print(2 + 3)      # prints 5</code></pre>
 
@@ -119,7 +120,7 @@ elif temperature > 15:
     print("Nice.")
 else:
     print("Brrr!")</code></pre>
-  <p>Comparisons: <code>&gt;</code> bigger, <code>&lt;</code> smaller, <code>==</code> equal (two equals signs!), <code>!=</code> not equal.</p>
+  <p>Comparisons: <code>&gt;</code> bigger, <code>&lt;</code> smaller, <code>==</code> equal (two equals signs!), <code>!=</code> not equal. Combine tests with <code>and</code>, <code>or</code>, <code>not</code> (for example <code>if a &gt; 0 and b &gt; 0:</code>).</p>
 
   <h3>5. Loops: do it again</h3>
   <pre><code class="language-python">for i in range(3):   # runs 3 times: i = 0, 1, 2
@@ -145,7 +146,13 @@ from adafruit_clue import clue   # borrow ALL the CLUE powers</code></pre>
   <pre><code class="language-python">def cheer(name):
     print("Go", name, "go!")
 
-cheer("Robo")   # Go Robo go!</code></pre>
+cheer("Robo")   # Go Robo go!
+
+def double(n):
+    return n * 2      # return hands an answer back
+
+print(double(4))      # 8</code></pre>
+  <p><code>print</code> shows something; <code>return</code> gives the answer back to the code that called the function.</p>
 
   <h3>9. f-strings: mix text and numbers</h3>
   <pre><code class="language-python">temp = 21.5678
@@ -175,7 +182,7 @@ print(f"Temp: {temp:.1f} C")   # Temp: 21.6 C  (.1f = 1 decimal place)</code></p
   <h3>Part B: Add the libraries</h3>
   <p>A <b>library</b> is code someone else wrote that you can borrow. The <code>adafruit_clue</code> library gives us easy commands like <code>clue.temperature</code>. It needs some helper libraries too.</p>
   <ol class="steps">
-    <li>Go to <a href="https://circuitpython.org/libraries" target="_blank" rel="noopener">circuitpython.org/libraries</a> and download the <b>Bundle for Version X.x</b> that matches the number from <code>boot_out.txt</code>.</li>
+    <li>Go to <a href="https://circuitpython.org/libraries" target="_blank" rel="noopener">circuitpython.org/libraries</a> and download the Bundle whose first number matches. For example, if <code>boot_out.txt</code> says <code>CircuitPython 10.3.1</code>, pick the bundle for <b>10.x</b>.</li>
     <li>Unzip it. Open the <code>lib</code> folder inside the bundle. It's huge, but we only need a few things.</li>
     <li>Copy these into the <code>lib</code> folder <b>on CIRCUITPY</b> (some are folders, some are files ending in <code>.mpy</code>):</li>
   </ol>
@@ -212,14 +219,14 @@ circup install adafruit_clue</code></pre>
     <li>Click <b>Serial</b> (bottom left) to open the console on the right. This is where <code>print()</code> messages show up. It has buttons for <b>Halt</b> (stop your program), <b>Restart</b>, <b>Clear</b> and <b>Plotter</b> (live graphs!).</li>
   </ol>
   <div class="box tip"><b>🪄 The golden rule</b><br>
-    Edit <code>code.py</code> → click <b>Save + Run</b> → the CLUE restarts and runs your code instantly. That's it!</div>
+    Edit <code>code.py</code> → click <b>Save + Run</b> → the CLUE restarts and runs your code instantly. That's it!<br>When a program ends, the console says <i>"Code done running."</i> That's normal, not an error.</div>
 
   <h3>Your first program</h3>
   <p>Delete everything in <code>code.py</code>, type this in, and click <b>Save + Run</b>:</p>
   <pre><code class="language-python">from adafruit_clue import clue
 
 print("Hello from my CLUE!")
-print("It is", clue.temperature, "degrees C in here")</code></pre>
+print("It is", round(clue.temperature, 1), "degrees C in here (a bit high, see Mission 11)")</code></pre>
   <p>Look in the Serial console. Did it print the temperature? <b>You just read a sensor!</b> 🎉</p>
 
   <details><summary>🐞 Troubleshooting & the REPL</summary>
@@ -254,7 +261,7 @@ screen.show()          # nothing appears until you call show()!
 
 while True:            # keep the program running so the text stays up
     pass               # "pass" means "do nothing"</code></pre>
-  <p>Colors are <b>(red, green, blue)</b>, each from 0 to 255. <code>(255, 0, 255)</code> = full red + full blue = <span style="color:#d0f">magenta</span>.</p>
+  <p>Colors are <b>(red, green, blue)</b>, each from 0 to 255. <code>(255, 0, 255)</code> = full red + full blue = <span style="color:#d0f">magenta</span>. The title is always white: <code>colors=</code> only changes the lines. Use <code>title_color=(255, 255, 0)</code> to change it.</p>
   <div class="box tip"><b>🤔 Why the <code>while True</code>?</b><br>When a program ends, the CLUE shows "Code done running" and your text vanishes. The endless loop keeps it on screen.</div>
 
   <details><summary>⭐ Bonus: GIANT text anywhere on the screen</summary>
@@ -374,7 +381,7 @@ song = [(C, 0.4), (C, 0.4), (G, 0.4), (G, 0.4), (A, 0.4), (A, 0.4), (G, 0.8),
 for note, length in song:     # unpack each (note, length) pair
     clue.play_tone(note, length)
     time.sleep(0.05)          # tiny gap between notes</code></pre>
-  <p>There's also <code>clue.start_tone(freq)</code> and <code>clue.stop_tone()</code> for notes that last as long as you want. You'll use those next mission.</p>
+  <p>There's also <code>clue.start_tone(freq)</code> and <code>clue.stop_tone()</code> for notes that last as long as you want. You'll use those next mission. <code>play_tone</code> waits until the note has finished before the next line runs; <code>start_tone</code> starts a note and moves on at once.</p>
   <div class="box challenge"><b>🏆 Challenge</b><br>Play a happy "level up" sound when A is pressed (notes going UP) and a sad "game over" sound when B is pressed (notes going DOWN).</div>
   <button class="btn done-btn" data-id="m4" data-xp="100">Mission complete!</button>
 </section>
@@ -401,6 +408,7 @@ while True:
     else:
         clue.stop_tone()
         clue.pixel.fill((0, 0, 0))</code></pre>
+  <p><b>Hands off while it starts!</b> The CLUE learns each pad's "normal" level when the program starts. If a pad seems stuck, restart the program without touching anything.</p>
   <div class="box tip"><b>🍌 Fun hack</b><br>Clip an alligator clip from a pad to a banana, apple or foil. Now the fruit is a piano key! (Only use fruit and clips, nothing plugged into the wall.)</div>
   <div class="box challenge"><b>🏆 Challenge</b><br>Add two more notes using button A and button B, so you have a 5-note piano.</div>
   <button class="btn done-btn" data-id="m5" data-xp="100">Mission complete!</button>
@@ -410,7 +418,7 @@ while True:
 <section class="card" id="m6" style="--c:var(--orange)">
   <span class="tag">Mission 6</span>
   <div class="mission-head"><h2><span class="emoji">🎱</span>Shake &amp; Tilt</h2><span class="xpchip">+150 XP</span></div>
-  <p>The <b>accelerometer</b> measures pushes and pulls, including gravity! <code>clue.acceleration</code> gives 3 numbers <b>(x, y, z)</b>. Lying flat and face up, z is about -9.8: that's gravity pulling down. Flip it over and it becomes +9.8!</p>
+  <p>The <b>accelerometer</b> measures pushes and pulls, including gravity! <code>clue.acceleration</code> gives 3 numbers <b>(x, y, z)</b>. Lying flat and face up, z is about -9.5 to -9.8 (a little different on each board): that's gravity pulling down. Flip it over and it becomes +9.8!</p>
   <pre><code class="language-python">import time
 from adafruit_clue import clue
 
@@ -422,7 +430,7 @@ while True:
   <div class="box tip"><b>📈 Graph it!</b><br>If you print numbers inside <b>parentheses</b> like <code>print((x, y, z))</code>, the code editor's <b>Plotter</b> can draw them as live lines.</div>
 
   <h3>Magic 8-Ball</h3>
-  <p><code>clue.shake()</code> is <code>True</code> when you shake the board. Raise the <code>shake_threshold</code> number if it triggers too easily, or lower it if you have to shake too hard.</p>
+  <p><code>clue.shake()</code> is <code>True</code> when you shake the board. The default <code>shake_threshold</code> is 30 (a hard shake); we use 20 so a gentle shake works. Raise it if it triggers too easily, lower it if you have to shake too hard, but don't go below 10.</p>
   <pre><code class="language-python">import random
 from adafruit_clue import clue
 
@@ -436,7 +444,7 @@ while True:
         screen[1].text = random.choice(answers)
         screen.show()
         clue.play_tone(880, 0.1)</code></pre>
-  <div class="box challenge"><b>🏆 Challenge</b><br>Build a "spirit level": turn the NeoPixel <b>green</b> when the board is flat (x and y both between -1 and 1), and <b>red</b> when it's tilted.</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Build a "spirit level": turn the NeoPixel <b>green</b> when the board is flat (x and y both close to 0). First print x and y on a flat table: your board may read 0.5 instead of 0, so pick limits a bit wider, like -1.5 to 1.5, and <b>red</b> when it's tilted.</div>
   <button class="btn done-btn" data-id="m6" data-xp="150">Mission complete!</button>
 </section>
 
@@ -459,6 +467,7 @@ while True:
     else:
         screen[4].text = ""
     screen.show()</code></pre>
+  <p><code>:6.0f</code> means no decimals, at least 6 characters wide, so the numbers line up. You can use lines 3, 4, 5… too: each line is 13 × text_scale pixels lower, so big text runs out of screen sooner.</p>
   <p>Lay the CLUE flat on the table and spin it like a record. That's the <b>z</b> axis!</p>
   <div class="box challenge"><b>🏆 Challenge</b><br>Play a higher note the faster you spin (hint: <code>clue.start_tone(200 + int(abs(z)))</code>).</div>
   <button class="btn done-btn" data-id="m7" data-xp="100">Mission complete!</button>
@@ -488,7 +497,7 @@ while True:
   <p>Bring a magnet close and watch the power jump. Earth's field alone is usually around 25 to 65.</p>
 
   <h3>Rough compass</h3>
-  <p>With the board lying flat, the x and y readings point towards magnetic north. <code>atan2</code> turns them into an angle.</p>
+  <p>With the board lying flat, <code>atan2(y, x)</code> turns the x and y readings into an angle, and <code>% 360</code> keeps it between 0 and 359.</p>
   <pre><code class="language-python">import math
 from adafruit_clue import clue
 
@@ -499,6 +508,7 @@ while True:
     heading = math.degrees(math.atan2(y, x)) % 360
     screen[1].text = f"{heading:.0f} deg"
     screen.show()</code></pre>
+  <p>The angle is measured from the board's x axis, not from the screen. Turn the board until it reads about 0: now its x axis points to magnetic north. Check which way makes the number go up before you trust N/E/S/W.</p>
   <div class="box warn"><b>🔧 Real-world alert</b><br>Every magnetometer is a little bit off, and metal or electronics nearby confuse it. If your compass is wonky, that's normal! Real engineers <b>calibrate</b>: slowly turn the board all the way around, note the smallest and biggest x and y, then subtract the middle value (<code>(min + max) / 2</code>) from each reading.</div>
   <div class="box challenge"><b>🏆 Challenge</b><br>Show "N", "E", "S" or "W" instead of a number.</div>
   <button class="btn done-btn" data-id="m8" data-xp="150">Mission complete!</button>
@@ -559,7 +569,8 @@ while True:
     clue.pixel.fill((r * 255 // biggest, g * 255 // biggest, b * 255 // biggest))
     time.sleep(0.1)</code></pre>
   <p>Hold a colorful LEGO brick, sticky note or marker cap right on top of the sensor. The NeoPixel copies it!</p>
-  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "fruit sorter": show "RED!", "GREEN!" or "BLUE!" on screen depending on which number is biggest.</div>
+  <p>The first reading after the white LEDs go on is 0 (the sensor needs about half a second for its first "photo"; in a program that reads only once, read, <code>time.sleep(0.5)</code>, then read again), and the numbers can be hundreds or thousands, not just 0 to 255. That's fine: only which one is biggest matters. (<code>//</code> divides and throws away the decimals.)</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "fruit sorter": show "RED!", "GREEN!" or "BLUE!" on screen depending on which number is biggest. When all three are 0 (the very first reading), show <code>"?"</code> instead of guessing: add a last <code>else</code>.</div>
   <button class="btn done-btn" data-id="m10" data-xp="150">Mission complete!</button>
 </section>
 
@@ -580,12 +591,13 @@ from adafruit_clue import clue
 # Look up today's sea-level pressure for your town on a weather site
 # and put it here to make altitude more accurate.
 clue.sea_level_pressure = 1013.25
+TEMP_OFFSET = 5      # measure yours: CLUE reading minus real thermometer
 
 screen = clue.simple_text_display(title="Weather Station", text_scale=2,
                                   colors=((255, 80, 80), (80, 180, 255), (255, 255, 0), (80, 255, 120)))
 
 while True:
-    temp_c = clue.temperature
+    temp_c = clue.temperature - TEMP_OFFSET
     temp_f = temp_c * 9 / 5 + 32
     screen[0].text = f"{temp_c:.1f}C / {temp_f:.0f}F"
     screen[1].text = f"Humid {clue.humidity:.0f}%"
@@ -594,8 +606,8 @@ while True:
     screen.show()
     time.sleep(1)</code></pre>
   <div class="box tip"><b>🔬 Experiments</b><br>Breathe on the board: humidity shoots up! Carry it up the stairs: altitude should climb by about 3 m per floor. Hold it in your hand: temperature rises.</div>
-  <div class="box warn"><b>🌡️ Heads up</b><br>The board warms itself a little, so its temperature often reads a couple of degrees high. Compare with a real thermometer and subtract the difference: that's <b>calibration</b> again.</div>
-  <div class="box challenge"><b>🏆 Challenge</b><br>Turn the NeoPixel blue when it's cold, green when comfy, and red when hot.</div>
+  <div class="box warn"><b>🌡️ Heads up</b><br>The board warms itself, so it reads several degrees too high (ours says 30 C in a comfortable room), and even more if the LEDs have been on. Put a real thermometer next to it, work out the difference and put it in <code>TEMP_OFFSET</code>: that's <b>calibration</b> again.</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Turn the NeoPixel blue when it's cold, green when comfy, and red when hot. Use the corrected <code>temp_c</code>.</div>
   <button class="btn done-btn" data-id="m11" data-xp="150">Mission complete!</button>
 </section>
 
@@ -623,8 +635,8 @@ while True:
         light_on = not light_on          # flip True ↔ False
         clue.white_leds = light_on
         time.sleep(0.5)                  # ignore the echo of the same clap</code></pre>
-  <p>Too jumpy? Make <code>sound_threshold</code> bigger. Not hearing you? Make it smaller. Check the noise meter to pick a good number.</p>
-  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "library monitor": the screen shows a happy message like "Nice and quiet" when it's quiet (the CLUE's font can't draw emoji) and "SHHH!" when it gets too loud.</div>
+  <p>Too jumpy? Make <code>sound_threshold</code> bigger. Not hearing you? Make it smaller. In a quiet room the number is usually 5 to 30. Talking is higher and a clap is much higher. Run the noise meter, clap, and pick a threshold between your loudest normal noise and your clap.</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "library monitor": the screen shows a happy message like "Nice and quiet" when it's quiet (the CLUE's font can't draw emoji) and "SHHH!" when it gets too loud. Each letter is 6 × text_scale pixels wide and the screen is 240 wide, so use <code>text_scale=2</code> for the long message.</div>
   <button class="btn done-btn" data-id="m12" data-xp="150">Mission complete!</button>
 </section>
 
@@ -693,7 +705,7 @@ while True:
   <p>New things here: <code>time.monotonic()</code> is a stopwatch that counts seconds since the board started, <code>break</code> jumps out of a loop, <code>continue</code> skips to the next round, and <code>None</code> means "nothing yet".</p>
   <div class="box challenge"><b>🏆 Boss Challenges</b><br>
     ① Make it 2-player: A vs. B, and whoever presses first after green wins.<br>
-    ② Use <code>clue.shake()</code> instead of a button: "shake when green!"<br>
+    ② Use <code>clue.shake()</code> instead of a button: "shake when green!" Heads up: <code>clue.shake()</code> takes about half a second to decide, so times are less precise than with a button.<br>
     ③ Invent your own game. Some ideas: a step counter (shake = step), a tilt maze on the NeoPixel, a pet that gets hungry and needs you to press buttons, or a data logger that tracks temperature all day.</div>
   <button class="btn done-btn" data-id="boss" data-xp="300">I beat the boss!</button>
 </section>
@@ -721,9 +733,9 @@ while True:
     <tr><td>Buttons</td><td><code>clue.button_a</code>, <code>clue.button_b</code></td><td>True while pressed</td></tr>
     <tr><td>Touch pads</td><td><code>clue.touch_0</code>, <code>clue.touch_1</code>, <code>clue.touch_2</code></td><td>True while touched</td></tr>
     <tr><td>Speaker</td><td><code>clue.play_tone(440, 0.5)</code><br><code>clue.start_tone(440)</code> / <code>clue.stop_tone()</code></td><td>Beeps and notes</td></tr>
-    <tr><td>Microphone</td><td><code>clue.sound_level</code><br><code>clue.loud_sound(sound_threshold=200)</code></td><td>Loudness number / True if loud</td></tr>
+    <tr><td>Microphone</td><td><code>clue.sound_level</code><br><code>clue.loud_sound(sound_threshold=500)</code></td><td>Loudness number / True if loud</td></tr>
     <tr><td>Accelerometer</td><td><code>x, y, z = clue.acceleration</code></td><td>m/s² (gravity ≈ 9.8)</td></tr>
-    <tr><td>Shake</td><td><code>clue.shake(shake_threshold=30)</code></td><td>True if shaken</td></tr>
+    <tr><td>Shake</td><td><code>clue.shake(shake_threshold=20)</code></td><td>True if shaken (30 is the default)</td></tr>
     <tr><td>Gyroscope</td><td><code>x, y, z = clue.gyro</code></td><td>Spin speed, degrees/second</td></tr>
     <tr><td>Magnetometer</td><td><code>x, y, z = clue.magnetic</code></td><td>Microteslas</td></tr>
     <tr><td>Proximity</td><td><code>clue.proximity</code></td><td>0 (far) to 255 (close)</td></tr>
