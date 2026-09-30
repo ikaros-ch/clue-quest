@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLUE Quest! Learn CircuitPython with the Adafruit CLUE</title>
+<meta name="description" content="A fun, mission-based CircuitPython tutorial for the Adafruit CLUE, made for middle schoolers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+:root{
+  --ink:#1b1340; --paper:#fff8e7; --card:#ffffff;
+  --pink:#ff4fa3; --cyan:#22d3ee; --yellow:#ffd23f; --green:#3ee07a; --purple:#8b5cf6; --orange:#ff8a3d; --blue:#3b82f6; --red:#ff4d4d;
+  --shadow:6px 6px 0 var(--ink);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;font-size:18px;line-height:1.6;color:var(--ink);background:var(--paper);
+  background-image:radial-gradient(var(--ink) 1px,transparent 1.5px);background-size:28px 28px;background-attachment:fixed}
+h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.1;margin:.2em 0 .4em}
+h2{font-size:2.2rem} h3{font-size:1.4rem;margin-top:1.4em}
+a{color:var(--purple);font-weight:700}
+code{font-family:"JetBrains Mono",monospace;font-size:.88em;background:#efe6ff;padding:.1em .35em;border-radius:6px}
+pre[class*=language-]{border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);margin:1em 0;font-size:15px}
+pre code{background:none;padding:0}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:50;background:var(--ink);color:#fff;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.topbar .logo{font-family:"Baloo 2";font-size:1.4rem;color:var(--yellow);text-decoration:none}
+.xp{flex:1;min-width:180px;display:flex;align-items:center;gap:10px;font-weight:900;font-size:.9rem}
+.xpbar{flex:1;height:18px;background:#3a2f70;border-radius:99px;border:2px solid #fff;overflow:hidden}
+.xpfill{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--yellow),var(--green));transition:width .6s cubic-bezier(.3,1.6,.5,1)}
+.topbar nav{display:flex;gap:6px;flex-wrap:wrap}
+.topbar nav a{color:#fff;text-decoration:none;font-size:.85rem;padding:4px 10px;border:2px solid #fff;border-radius:99px}
+.topbar nav a:hover{background:var(--pink)}
+
+/* hero */
+.hero{padding:48px 0 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center}
+.hero h1{font-size:clamp(2.6rem,7vw,4.6rem);margin:0}
+.hero h1 span{color:var(--pink);-webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink)}
+.hero p.lead{font-size:1.25rem}
+.sticker{display:inline-block;background:var(--yellow);border:3px solid var(--ink);border-radius:99px;padding:4px 14px;font-weight:900;transform:rotate(-3deg);box-shadow:3px 3px 0 var(--ink)}
+.btn{display:inline-block;background:var(--pink);color:#fff;font-weight:900;font-size:1.1rem;text-decoration:none;border:3px solid var(--ink);border-radius:14px;padding:10px 20px;box-shadow:var(--shadow);transition:transform .1s, box-shadow .1s;cursor:pointer;font-family:inherit}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
+.clue-svg{width:100%;max-width:400px;filter:drop-shadow(8px 8px 0 var(--ink));animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px) rotate(-2deg)}}
+#screenText{animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* cards */
+section.card{background:var(--card);border:4px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 28px;margin:40px 0;position:relative}
+.card .tag{position:absolute;top:-18px;left:20px;background:var(--c,var(--cyan));border:3px solid var(--ink);border-radius:10px;padding:2px 12px;font-family:"Baloo 2";font-weight:800;box-shadow:3px 3px 0 var(--ink)}
+.card h2 .emoji{font-size:1.1em;display:inline-block;margin-right:.2em}
+.card.done{background:#eafff0}
+.card.done .tag::after{content:" ✔"}
+.mission-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.xpchip{font-weight:900;background:var(--ink);color:var(--yellow);border-radius:99px;padding:2px 12px;font-size:.9rem}
+
+.box{border:3px dashed var(--ink);border-radius:14px;padding:12px 18px;margin:1em 0;background:#fffbea}
+.box.tip{background:#e6fbff;border-color:#0891b2}
+.box.warn{background:#fff0f0;border-color:var(--red)}
+.box.challenge{background:#f3edff;border-style:solid;border-color:var(--purple)}
+.box > b:first-child{font-family:"Baloo 2";font-size:1.15rem}
+
+ol.steps{counter-reset:s;list-style:none;padding-left:0}
+ol.steps>li{counter-increment:s;position:relative;padding-left:54px;margin:14px 0;min-height:40px}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);display:grid;place-items:center;font-weight:900;font-family:"Baloo 2"}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:1em 0}
+.part{border:3px solid var(--ink);border-radius:14px;padding:12px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
+.part .big{font-size:2rem}
+.part b{display:block;font-family:"Baloo 2";font-size:1.1rem}
+.part small{display:block;color:#5b537f}
+
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:2px solid var(--ink);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--yellow);font-family:"Baloo 2"}
+tr:nth-child(even) td{background:#faf5ff}
+
+.done-btn{margin-top:14px;background:var(--green);color:var(--ink)}
+.card.done .done-btn{background:#fff}
+.copy{position:absolute;top:8px;right:8px;font:700 12px Nunito;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;padding:2px 8px;cursor:pointer}
+.codewrap{position:relative}
+
+details{border:3px solid var(--ink);border-radius:12px;padding:8px 14px;margin:.8em 0;background:#fff}
+summary{cursor:pointer;font-weight:900}
+
+.pop{position:fixed;pointer-events:none;font-size:28px;z-index:99;animation:pop 1s ease-out forwards}
+@keyframes pop{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+
+.trophy{text-align:center;font-size:1.3rem}
+.trophy .big{font-size:5rem;display:block}
+footer{text-align:center;padding:40px 16px 60px;font-size:.9rem}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .clue-svg{max-width:280px;margin:auto;display:block}
+  section.card{padding:20px 16px}
+  h2{font-size:1.8rem}
+  .topbar nav{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="#top">CLUE Quest</a>
+  <div class="xp"><span id="xpText">0 XP</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div><span id="lvl">Lv 1</span></div>
+  <nav>
+    <a href="#python">Python</a><a href="#setup">Setup</a><a href="#m1">Missions</a><a href="#boss">Boss</a><a href="#cheat">Cheat Sheet</a>
+  </nav>
+</header>
+
+<main class="wrap" id="top">
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <span class="sticker">For coders age 11+ 🚀</span>
+    <h1>CLUE <span>Quest!</span></h1>
+    <p class="lead">Turn a tiny circuit board into a <b>game console</b>, a <b>weather station</b>, a <b>piano</b>, a <b>compass</b> and more, using <b>CircuitPython</b>.</p>
+    <p>Never coded before? No problem. Know some Python? Skip to the missions. Every mission you finish earns you <b>XP</b> (look at the bar at the top!).</p>
+    <a class="btn" href="#meet">Start the quest ▶</a>
+  </div>
+  <svg class="clue-svg" viewBox="0 0 300 250" role="img" aria-label="Cartoon drawing of the Adafruit CLUE board">
+    <rect x="6" y="6" width="288" height="238" rx="22" fill="#1e2a55" stroke="#1b1340" stroke-width="6"/>
+    <!-- gold edge connector -->
+    <rect x="6" y="206" width="288" height="38" rx="0" fill="#1e2a55"/>
+    <g fill="#f5c542" stroke="#1b1340" stroke-width="3">
+      <rect x="30" y="206" width="38" height="34" rx="6"/><rect x="88" y="206" width="38" height="34" rx="6"/>
+      <rect x="146" y="206" width="38" height="34" rx="6"/><rect x="204" y="206" width="30" height="34" rx="6"/><rect x="246" y="206" width="30" height="34" rx="6"/>
+    </g>
+    <g font-family="Baloo 2, sans-serif" font-weight="800" font-size="16" fill="#1b1340" text-anchor="middle">
+      <text x="49" y="230">0</text><text x="107" y="230">1</text><text x="165" y="230">2</text><text x="219" y="229" font-size="11">3V</text><text x="261" y="229" font-size="10">GND</text>
+    </g>
+    <!-- sensor + white leds -->
+    <circle cx="125" cy="22" r="6" fill="#fff" stroke="#1b1340" stroke-width="2"/>
+    <rect x="140" y="15" width="20" height="14" rx="3" fill="#111"/>
+    <circle cx="175" cy="22" r="6" fill="#fff" stroke="#1b1340" stroke-width="2"/>
+    <!-- screen -->
+    <rect x="80" y="38" width="140" height="140" rx="8" fill="#111" stroke="#1b1340" stroke-width="4"/>
+    <rect x="88" y="46" width="124" height="124" rx="4" fill="#2b0a4a"/>
+    <text id="screenText" x="150" y="120" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="40" fill="#22d3ee">HI!</text>
+    <!-- buttons -->
+    <g stroke="#1b1340" stroke-width="4">
+      <rect x="22" y="90" width="40" height="40" rx="8" fill="#ddd"/><circle cx="42" cy="110" r="12" fill="#ff4fa3"/>
+      <rect x="238" y="90" width="40" height="40" rx="8" fill="#ddd"/><circle cx="258" cy="110" r="12" fill="#ff4fa3"/>
+    </g>
+    <g font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" fill="#fff" text-anchor="middle">
+      <text x="42" y="156">A</text><text x="258" y="156">B</text>
+    </g>
+  </svg>
+</div>
+
+<!-- MEET -->
+<section class="card" id="meet" style="--c:var(--cyan)">
+  <span class="tag">Level 0</span>
+  <h2><span class="emoji">🔍</span>Meet the CLUE</h2>
+  <p>The <b>Adafruit CLUE</b> is a small computer (a <i>microcontroller</i>) about the size of a credit card. It's crammed with gadgets. Here's what's on board:</p>
+  <div class="grid">
+    <div class="part"><span class="big">📺</span><b>Color screen</b><small>1.3" square, 240 × 240 pixels</small></div>
+    <div class="part"><span class="big">🅰️🅱️</span><b>Buttons A &amp; B</b><small>Left and right of the screen</small></div>
+    <div class="part"><span class="big">🌈</span><b>NeoPixel</b><small>An LED that can be any color</small></div>
+    <div class="part"><span class="big">🔴⚪</span><b>Red LED + white LEDs</b><small>A status light and two mini flashlights</small></div>
+    <div class="part"><span class="big">🔊</span><b>Speaker</b><small>Beeps, tones and tunes</small></div>
+    <div class="part"><span class="big">🎤</span><b>Microphone</b><small>Hears how loud it is</small></div>
+    <div class="part"><span class="big">👆</span><b>Touch pads 0, 1, 2</b><small>The big gold pads on the bottom edge</small></div>
+    <div class="part"><span class="big">🎢</span><b>Accelerometer + gyro</b><small>Feels tilt, shakes and spins</small></div>
+    <div class="part"><span class="big">🧭</span><b>Magnetometer</b><small>Senses magnets (a compass!)</small></div>
+    <div class="part"><span class="big">✋</span><b>Proximity, gesture &amp; color</b><small>The little black sensor at the top</small></div>
+    <div class="part"><span class="big">🌡️</span><b>Temp + humidity</b><small>How hot and how sticky the air is</small></div>
+    <div class="part"><span class="big">⛰️</span><b>Air pressure</b><small>Weather and altitude</small></div>
+  </div>
+  <p>By the end of this quest you'll have used <b>every one</b> of these. You also need:</p>
+  <ul>
+    <li>A <b>USB cable that can carry data</b> (some cables only charge, and those won't work!)</li>
+    <li>A computer with <b>Chrome</b> or <b>Edge</b> (a Chromebook is fine)</li>
+  </ul>
+  <button class="btn done-btn" data-id="meet" data-xp="50">I met my CLUE! +50 XP</button>
+</section>
+
+<!-- PYTHON -->
+<section class="card" id="python" style="--c:var(--yellow)">
+  <span class="tag">Level 1</span>
+  <h2><span class="emoji">🐍</span>Python in 10 minutes</h2>
+  <p><b>CircuitPython</b> is Python made for tiny boards. If you already know Python, skim this and move on. If not, these are the only ideas you need for the whole quest. You'll try them for real once the CLUE is set up.</p>
+
+  <h3>1. Comments: notes for humans</h3>
+  <p>Anything after <code>#</code> is ignored by the computer.</p>
+  <pre><code class="language-python"># This is a comment. The CLUE skips it.</code></pre>
+
+  <h3>2. print(): talk to the computer screen</h3>
+  <pre><code class="language-python">print("Hello!")
+print(2 + 3)      # prints 5</code></pre>
+
+  <h3>3. Variables: labeled boxes</h3>
+  <pre><code class="language-python">score = 0          # a number
+name = "Robo"      # text (a "string") goes in quotes
+score = score + 10 # now score is 10
+print(name, "has", score, "points")</code></pre>
+
+  <h3>4. True / False and if</h3>
+  <p><b>Indentation matters!</b> The lines pushed in by 4 spaces belong to the <code>if</code>.</p>
+  <pre><code class="language-python">temperature = 30
+if temperature > 25:
+    print("Hot!")
+elif temperature > 15:
+    print("Nice.")
+else:
+    print("Brrr!")</code></pre>
+  <p>Comparisons: <code>&gt;</code> bigger, <code>&lt;</code> smaller, <code>==</code> equal (two equals signs!), <code>!=</code> not equal.</p>
+
+  <h3>5. Loops: do it again</h3>
+  <pre><code class="language-python">for i in range(3):   # runs 3 times: i = 0, 1, 2
+    print("Hip hip hooray", i)
+
+while True:          # runs FOREVER
+    print("I never stop!")</code></pre>
+  <p>Almost every CLUE program has a <code>while True:</code> loop, so it keeps checking the buttons and sensors forever.</p>
+
+  <h3>6. Lists and tuples: many things in one box</h3>
+  <pre><code class="language-python">colors = ["red", "green", "blue"]   # a list
+print(colors[0])                     # "red" (counting starts at 0!)
+purple = (255, 0, 255)               # a tuple: red, green, blue amounts
+x, y, z = (1, 2, 3)                  # "unpack" a tuple into 3 variables</code></pre>
+
+  <h3>7. import and time.sleep()</h3>
+  <pre><code class="language-python">import time          # borrow Python's clock tools
+time.sleep(0.5)      # wait half a second
+
+from adafruit_clue import clue   # borrow ALL the CLUE powers</code></pre>
+
+  <h3>8. Functions: your own commands</h3>
+  <pre><code class="language-python">def cheer(name):
+    print("Go", name, "go!")
+
+cheer("Robo")   # Go Robo go!</code></pre>
+
+  <h3>9. f-strings: mix text and numbers</h3>
+  <pre><code class="language-python">temp = 21.5678
+print(f"Temp: {temp:.1f} C")   # Temp: 21.6 C  (.1f = 1 decimal place)</code></pre>
+
+  <div class="box tip"><b>🧠 Remember</b><br>Python is picky: <b>capital letters matter</b> (<code>True</code> not <code>true</code>), <b>colons</b> go at the end of <code>if</code>/<code>for</code>/<code>while</code>/<code>def</code> lines, and <b>indent with 4 spaces</b>.</div>
+  <button class="btn done-btn" data-id="python" data-xp="100">I speak Python! +100 XP</button>
+</section>
+
+<!-- SETUP -->
+<section class="card" id="setup" style="--c:var(--orange)">
+  <span class="tag">Level 2</span>
+  <h2><span class="emoji">🛠️</span>Setup: power up your CLUE</h2>
+  <p>We only have to do this once. There are 3 parts: <b>(A)</b> install CircuitPython, <b>(B)</b> add the libraries, <b>(C)</b> connect the code editor.</p>
+
+  <h3>Part A: Install CircuitPython</h3>
+  <ol class="steps">
+    <li>Go to <a href="https://circuitpython.org/board/clue_nrf52840_express/" target="_blank" rel="noopener">circuitpython.org/board/clue_nrf52840_express</a> and download the latest stable <b>.UF2</b> file (not an "Absolute Newest" or beta one).</li>
+    <li>Plug the CLUE into your computer with your data USB cable.</li>
+    <li><b>Double-click</b> the little <b>Reset</b> button (quick: click-click!). The NeoPixel turns <b style="color:#16a34a">green</b> and a new drive called <b>CLUEBOOT</b> appears on your computer.</li>
+    <li>Drag the <b>.UF2</b> file onto <b>CLUEBOOT</b>. The light flashes, CLUEBOOT disappears, and a new drive called <b>CIRCUITPY</b> shows up. 🎉</li>
+  </ol>
+  <div class="box warn"><b>😬 No CLUEBOOT drive?</b><br>
+    ① Try a different USB cable, since it's probably a charge-only cable. ② Double-click faster (or slower!). ③ Try another USB port. If you see CIRCUITPY instead, CircuitPython is already installed, so skip to Part B.</div>
+  <p>Look inside CIRCUITPY. You'll see <code>code.py</code> (your program), a <code>lib</code> folder (for libraries) and <code>boot_out.txt</code>. Open <code>boot_out.txt</code>: the first line tells you your <b>CircuitPython version</b>, for example <code>Adafruit CircuitPython 10.0.0</code>. Remember that first number!</p>
+
+  <h3>Part B: Add the libraries</h3>
+  <p>A <b>library</b> is code someone else wrote that you can borrow. The <code>adafruit_clue</code> library gives us easy commands like <code>clue.temperature</code>. It needs some helper libraries too.</p>
+  <ol class="steps">
+    <li>Go to <a href="https://circuitpython.org/libraries" target="_blank" rel="noopener">circuitpython.org/libraries</a> and download the <b>Bundle for Version X.x</b> that matches the number from <code>boot_out.txt</code>.</li>
+    <li>Unzip it. Open the <code>lib</code> folder inside the bundle. It's huge, but we only need a few things.</li>
+    <li>Copy these into the <code>lib</code> folder <b>on CIRCUITPY</b> (some are folders, some are files ending in <code>.mpy</code>):</li>
+  </ol>
+  <div class="tbl"><table>
+    <tr><th>Copy this</th><th>It powers…</th></tr>
+    <tr><td><code>adafruit_clue.mpy</code></td><td>The easy CLUE commands ⭐</td></tr>
+    <tr><td><code>adafruit_apds9960</code> 📁</td><td>Proximity, gesture &amp; color sensor</td></tr>
+    <tr><td><code>adafruit_bmp280.mpy</code></td><td>Air pressure &amp; altitude</td></tr>
+    <tr><td><code>adafruit_sht31d.mpy</code></td><td>Humidity (and temperature)</td></tr>
+    <tr><td><code>adafruit_lsm6ds</code> 📁</td><td>Accelerometer &amp; gyro</td></tr>
+    <tr><td><code>adafruit_lis3mdl.mpy</code></td><td>Magnetometer</td></tr>
+    <tr><td><code>adafruit_display_text</code> 📁</td><td>Words on the screen</td></tr>
+    <tr><td><code>neopixel.mpy</code></td><td>The color LED</td></tr>
+    <tr><td><code>adafruit_bus_device</code> 📁</td><td>Helper that talks to sensors</td></tr>
+    <tr><td><code>adafruit_register</code> 📁</td><td>Another sensor helper</td></tr>
+  </table></div>
+  <div class="box tip"><b>💡 Error says <code>ImportError: no module named '…'</code>?</b><br>
+    That means a library is missing. Find the name it says in the bundle's <code>lib</code> folder and copy it over too.</div>
+  <details><summary>🧑‍🏫 For teachers: the faster way with circup</summary>
+    <p>If Python 3 is installed on the computer, <code>circup</code> installs a library <i>and all its helpers</i> automatically, matched to the board's version. With the CLUE plugged in:</p>
+    <pre><code class="language-bash">pip install circup
+circup install adafruit_clue</code></pre>
+    <p>Handy for setting up a whole class set of boards.</p>
+  </details>
+
+  <h3>Part C: Connect to the code editor</h3>
+  <ol class="steps">
+    <li>Open <a href="https://code.circuitpython.org/" target="_blank" rel="noopener">code.circuitpython.org</a> in <b>Chrome</b> or <b>Edge</b>.</li>
+    <li>Choose <b>USB</b> as the connection type and click <b>Connect</b>. Pick your CLUE from the list of devices.</li>
+    <li>When it asks for a folder, choose the <b>CIRCUITPY</b> drive and allow the editor to <b>edit files</b>.</li>
+    <li>Open <code>code.py</code>. This is the file the CLUE runs automatically.</li>
+    <li>Click <b>Serial</b> to open the console. This is where <code>print()</code> messages show up.</li>
+  </ol>
+  <div class="box tip"><b>🪄 The golden rule</b><br>
+    Edit <code>code.py</code> → click <b>Save + Run</b> → the CLUE restarts and runs your code instantly. That's it!</div>
+
+  <h3>Your first program</h3>
+  <p>Delete everything in <code>code.py</code>, type this in, and click <b>Save + Run</b>:</p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+print("Hello from my CLUE!")
+print("It is", clue.temperature, "degrees C in here")</code></pre>
+  <p>Look in the Serial console. Did it print the temperature? <b>You just read a sensor!</b> 🎉</p>
+
+  <details><summary>🐞 Troubleshooting & the REPL</summary>
+    <ul>
+      <li><b>Red error text?</b> Read the <i>last</i> line and look at the <b>line number</b>. Most bugs are typos, a missing <code>:</code>, or wrong indentation.</li>
+      <li><b>Errors also show on the CLUE's screen</b>, which is handy!</li>
+      <li><b>REPL</b> = a live Python playground. Click in the Serial console and press <b>Ctrl + C</b>, then any key. You get a <code>&gt;&gt;&gt;</code> prompt. Type <code>2 + 2</code> and press Enter! Try the Python lessons above here. Press <b>Ctrl + D</b> to go back to running <code>code.py</code>.</li>
+      <li><b>Editor can't see the board?</b> Unplug, plug back in, refresh the page, and connect again.</li>
+      <li>The editor also supports <b>Bluetooth</b> for the CLUE, but USB is the easiest way to start.</li>
+    </ul>
+  </details>
+  <button class="btn done-btn" data-id="setup" data-xp="150">My CLUE is alive! +150 XP</button>
+</section>
+
+<h2 style="text-align:center;margin-top:60px">🗺️ The Missions</h2>
+<p style="text-align:center">Each mission unlocks a new CLUE power. Type the code (typing it beats copy-paste for learning!), run it, then try the <b>challenge</b>.</p>
+
+<!-- M1 SCREEN -->
+<section class="card" id="m1" style="--c:var(--pink)">
+  <span class="tag">Mission 1</span>
+  <div class="mission-head"><h2><span class="emoji">📺</span>Hello, Screen!</h2><span class="xpchip">+100 XP</span></div>
+  <p>Let's put words on the display. <code>simple_text_display</code> gives you a title plus lines numbered <b>0, 1, 2…</b></p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+screen = clue.simple_text_display(title="CLUE QUEST", text_scale=2,
+                                  colors=((255, 0, 255), (0, 255, 255), (255, 255, 0)))
+
+screen[0].text = "Hello, world!"
+screen[1].text = "My name is"
+screen[2].text = "Sam"
+screen.show()          # nothing appears until you call show()!
+
+while True:            # keep the program running so the text stays up
+    pass               # "pass" means "do nothing"</code></pre>
+  <p>Colors are <b>(red, green, blue)</b>, each from 0 to 255. <code>(255, 0, 255)</code> = full red + full blue = <span style="color:#d0f">magenta</span>.</p>
+  <div class="box tip"><b>🤔 Why the <code>while True</code>?</b><br>When a program ends, the CLUE shows "Code done running" and your text vanishes. The endless loop keeps it on screen.</div>
+
+  <details><summary>⭐ Bonus: GIANT text anywhere on the screen</summary>
+    <p>For full control, use <code>displayio</code> (the screen's drawing system) and a <code>Label</code>:</p>
+    <pre><code class="language-python">import displayio
+import terminalio
+from adafruit_display_text import label
+from adafruit_clue import clue
+
+group = displayio.Group()                 # a "layer" to draw on
+
+# background: a 240x240 bitmap filled with one color
+bg = displayio.Bitmap(240, 240, 1)
+palette = displayio.Palette(1)
+palette[0] = 0x220044                     # dark purple (hex color)
+group.append(displayio.TileGrid(bg, pixel_shader=palette))
+
+big = label.Label(terminalio.FONT, text="WOW", color=0x22D3EE, scale=6, x=65, y=120)
+group.append(big)
+
+clue.display.root_group = group           # show our layer
+
+while True:
+    pass</code></pre>
+    <p><code>x</code> and <code>y</code> are pixel positions: (0, 0) is the top-left corner, (239, 239) the bottom-right.</p>
+  </details>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a name badge with your name, your favorite food and your favorite game, each in a different color.</div>
+  <button class="btn done-btn" data-id="m1" data-xp="100">Mission complete!</button>
+</section>
+
+<!-- M2 LIGHTS -->
+<section class="card" id="m2" style="--c:var(--yellow)">
+  <span class="tag">Mission 2</span>
+  <div class="mission-head"><h2><span class="emoji">🌈</span>Light Show</h2><span class="xpchip">+100 XP</span></div>
+  <p>The CLUE has three kinds of lights: the <b>NeoPixel</b> (any color), the <b>red LED</b> (on/off) and two <b>white LEDs</b> (on/off, super bright).</p>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+clue.pixel.brightness = 0.2    # 0.0 = off, 1.0 = BLINDING
+
+rainbow = [(255, 0, 0), (255, 128, 0), (255, 255, 0),
+           (0, 255, 0), (0, 0, 255), (128, 0, 255)]
+
+while True:
+    for color in rainbow:
+        clue.pixel.fill(color)   # set the NeoPixel color
+        clue.red_led = True      # red LED on
+        time.sleep(0.3)
+        clue.red_led = False     # red LED off
+        time.sleep(0.1)</code></pre>
+  <p>And the white LEDs are one line:</p>
+  <pre><code class="language-python">clue.white_leds = True    # flashlight ON (False turns it off)</code></pre>
+  <div class="box warn"><b>😎 Careful</b><br>Don't stare into the white LEDs, they're really bright!</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a police siren: flash red and blue on the NeoPixel, and blink the white LEDs every time it turns blue.</div>
+  <button class="btn done-btn" data-id="m2" data-xp="100">Mission complete!</button>
+</section>
+
+<!-- M3 BUTTONS -->
+<section class="card" id="m3" style="--c:var(--cyan)">
+  <span class="tag">Mission 3</span>
+  <div class="mission-head"><h2><span class="emoji">🅰️</span>Button Mash</h2><span class="xpchip">+100 XP</span></div>
+  <p><code>clue.button_a</code> is <code>True</code> while A is held down, <code>False</code> otherwise. Same for B.</p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+while True:
+    if clue.button_a and clue.button_b:
+        clue.pixel.fill((0, 255, 0))      # both = green
+    elif clue.button_a:
+        clue.pixel.fill((255, 0, 0))      # A = red
+    elif clue.button_b:
+        clue.pixel.fill((0, 0, 255))      # B = blue
+    else:
+        clue.pixel.fill((0, 0, 0))        # nothing = off</code></pre>
+
+  <h3>Counting presses</h3>
+  <p>If we just did <code>count = count + 1</code> while A is held, it would count hundreds of times per press! Instead we remember whether the button was <i>already</i> down, and only count the moment it <b>goes</b> down.</p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+screen = clue.simple_text_display(title="Clicker", text_scale=3)
+count = 0
+was_down = False
+
+while True:
+    down = clue.button_a
+    if down and not was_down:     # it JUST got pressed
+        count = count + 1
+    was_down = down
+
+    if clue.button_b:             # B resets
+        count = 0
+
+    screen[0].text = str(count)   # str() turns a number into text
+    screen.show()</code></pre>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make B toggle the white LED flashlight on and off (hint: use the same "just pressed" trick and <code>clue.white_leds = not clue.white_leds</code>).</div>
+  <button class="btn done-btn" data-id="m3" data-xp="100">Mission complete!</button>
+</section>
+
+<!-- M4 SOUND -->
+<section class="card" id="m4" style="--c:var(--purple)">
+  <span class="tag">Mission 4</span>
+  <div class="mission-head"><h2><span class="emoji">🎵</span>Beep Boop Band</h2><span class="xpchip">+100 XP</span></div>
+  <p><code>clue.play_tone(frequency, seconds)</code> plays a note. A higher frequency means a higher pitch. 262 is middle C.</p>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+C, D, E, F, G, A = 262, 294, 330, 349, 392, 440
+
+# Twinkle Twinkle Little Star: (note, how long)
+song = [(C, 0.4), (C, 0.4), (G, 0.4), (G, 0.4), (A, 0.4), (A, 0.4), (G, 0.8),
+        (F, 0.4), (F, 0.4), (E, 0.4), (E, 0.4), (D, 0.4), (D, 0.4), (C, 0.8)]
+
+for note, length in song:     # unpack each (note, length) pair
+    clue.play_tone(note, length)
+    time.sleep(0.05)          # tiny gap between notes</code></pre>
+  <p>There's also <code>clue.start_tone(freq)</code> and <code>clue.stop_tone()</code> for notes that last as long as you want. You'll use those next mission.</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Play a happy "level up" sound when A is pressed (notes going UP) and a sad "game over" sound when B is pressed (notes going DOWN).</div>
+  <button class="btn done-btn" data-id="m4" data-xp="100">Mission complete!</button>
+</section>
+
+<!-- M5 TOUCH -->
+<section class="card" id="m5" style="--c:var(--green)">
+  <span class="tag">Mission 5</span>
+  <div class="mission-head"><h2><span class="emoji">🎹</span>Touch Piano</h2><span class="xpchip">+100 XP</span></div>
+  <p>The gold pads labeled <b>0</b>, <b>1</b> and <b>2</b> on the bottom edge are <b>touch sensors</b>. Your body carries a tiny electric charge, and the CLUE can feel it!</p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+clue.pixel.brightness = 0.2
+
+while True:
+    if clue.touch_0:
+        clue.start_tone(262)          # C
+        clue.pixel.fill((255, 0, 0))
+    elif clue.touch_1:
+        clue.start_tone(330)          # E
+        clue.pixel.fill((0, 255, 0))
+    elif clue.touch_2:
+        clue.start_tone(392)          # G
+        clue.pixel.fill((0, 0, 255))
+    else:
+        clue.stop_tone()
+        clue.pixel.fill((0, 0, 0))</code></pre>
+  <div class="box tip"><b>🍌 Fun hack</b><br>Clip an alligator clip from a pad to a banana, apple or foil. Now the fruit is a piano key! (Only use fruit and clips, nothing plugged into the wall.)</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Add two more notes using button A and button B, so you have a 5-note piano.</div>
+  <button class="btn done-btn" data-id="m5" data-xp="100">Mission complete!</button>
+</section>
+
+<!-- M6 ACCEL -->
+<section class="card" id="m6" style="--c:var(--orange)">
+  <span class="tag">Mission 6</span>
+  <div class="mission-head"><h2><span class="emoji">🎱</span>Shake &amp; Tilt</h2><span class="xpchip">+150 XP</span></div>
+  <p>The <b>accelerometer</b> measures pushes and pulls, including gravity! <code>clue.acceleration</code> gives 3 numbers <b>(x, y, z)</b>. Lying flat, z is about 9.8, which is gravity pulling down.</p>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+while True:
+    x, y, z = clue.acceleration
+    print(f"x={x:.1f}  y={y:.1f}  z={z:.1f}")
+    time.sleep(0.2)</code></pre>
+  <p>Tilt the board and watch the numbers change. Tip it left and right: that's <b>x</b>. Tip it forward and back: that's <b>y</b>.</p>
+  <div class="box tip"><b>📈 Graph it!</b><br>If you print numbers inside <b>parentheses</b> like <code>print((x, y, z))</code>, the code editor's <b>Plotter</b> can draw them as live lines.</div>
+
+  <h3>Magic 8-Ball</h3>
+  <p><code>clue.shake()</code> is <code>True</code> when you shake the board. Raise the <code>shake_threshold</code> number if it triggers too easily, or lower it if you have to shake too hard.</p>
+  <pre><code class="language-python">import random
+from adafruit_clue import clue
+
+answers = ["Yes!", "No way", "Maybe...", "Ask again", "Definitely", "Nope"]
+screen = clue.simple_text_display(title="Magic 8-Ball", text_scale=3)
+screen[1].text = "Shake me!"
+screen.show()
+
+while True:
+    if clue.shake(shake_threshold=20):
+        screen[1].text = random.choice(answers)
+        screen.show()
+        clue.play_tone(880, 0.1)</code></pre>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Build a "spirit level": turn the NeoPixel <b>green</b> when the board is flat (x and y both between -1 and 1), and <b>red</b> when it's tilted.</div>
+  <button class="btn done-btn" data-id="m6" data-xp="150">Mission complete!</button>
+</section>
+
+<!-- M7 GYRO -->
+<section class="card" id="m7" style="--c:var(--blue)">
+  <span class="tag">Mission 7</span>
+  <div class="mission-head"><h2><span class="emoji">🌀</span>Spin Detector</h2><span class="xpchip">+100 XP</span></div>
+  <p>The <b>gyroscope</b> measures how fast the board is <b>spinning</b>, in degrees per second. Sitting still, it reads close to 0.</p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+screen = clue.simple_text_display(title="Spin-o-meter", text_scale=2)
+
+while True:
+    x, y, z = clue.gyro
+    screen[0].text = f"x: {x:6.0f}"
+    screen[1].text = f"y: {y:6.0f}"
+    screen[2].text = f"z: {z:6.0f}"
+    if abs(z) > 200:              # abs() ignores the minus sign
+        screen[4].text = "WHEEE!"
+    else:
+        screen[4].text = ""
+    screen.show()</code></pre>
+  <p>Lay the CLUE flat on the table and spin it like a record. That's the <b>z</b> axis!</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Play a higher note the faster you spin (hint: <code>clue.start_tone(200 + int(abs(z)))</code>).</div>
+  <button class="btn done-btn" data-id="m7" data-xp="100">Mission complete!</button>
+</section>
+
+<!-- M8 MAG -->
+<section class="card" id="m8" style="--c:var(--red)">
+  <span class="tag">Mission 8</span>
+  <div class="mission-head"><h2><span class="emoji">🧭</span>Magnet Hunter &amp; Compass</h2><span class="xpchip">+150 XP</span></div>
+  <p>The <b>magnetometer</b> senses magnetic fields (in <i>microteslas</i>). Earth is a giant magnet, and a fridge magnet is a tiny one.</p>
+  <pre><code class="language-python">import math
+from adafruit_clue import clue
+
+screen = clue.simple_text_display(title="Magnet Hunter", text_scale=2)
+
+while True:
+    x, y, z = clue.magnetic
+    strength = math.sqrt(x*x + y*y + z*z)    # total magnet power
+    screen[0].text = f"Power: {strength:.0f}"
+    if strength > 150:
+        screen[2].text = "MAGNET NEARBY!"
+        clue.pixel.fill((255, 0, 0))
+    else:
+        screen[2].text = ""
+        clue.pixel.fill((0, 0, 0))
+    screen.show()</code></pre>
+  <p>Bring a magnet close and watch the power jump. Earth's field alone is usually around 25 to 65.</p>
+
+  <h3>Rough compass</h3>
+  <p>With the board lying flat, the x and y readings point towards magnetic north. <code>atan2</code> turns them into an angle.</p>
+  <pre><code class="language-python">import math
+from adafruit_clue import clue
+
+screen = clue.simple_text_display(title="Compass", text_scale=3)
+
+while True:
+    x, y, z = clue.magnetic
+    heading = math.degrees(math.atan2(y, x)) % 360
+    screen[1].text = f"{heading:.0f} deg"
+    screen.show()</code></pre>
+  <div class="box warn"><b>🔧 Real-world alert</b><br>Every magnetometer is a little bit off, and metal or electronics nearby confuse it. If your compass is wonky, that's normal! Real engineers <b>calibrate</b>: slowly turn the board all the way around, note the smallest and biggest x and y, then subtract the middle value (<code>(min + max) / 2</code>) from each reading.</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Show "N", "E", "S" or "W" instead of a number.</div>
+  <button class="btn done-btn" data-id="m8" data-xp="150">Mission complete!</button>
+</section>
+
+<!-- M9 PROX/GESTURE -->
+<section class="card" id="m9" style="--c:var(--pink)">
+  <span class="tag">Mission 9</span>
+  <div class="mission-head"><h2><span class="emoji">✋</span>Jedi Hand Powers</h2><span class="xpchip">+150 XP</span></div>
+  <p>The little black sensor at the top of the board shines invisible infrared light and watches it bounce back. That gives us <b>proximity</b> (0 = far, 255 = touching) and <b>gestures</b> (hand swipes!).</p>
+  <h3>Proximity theremin</h3>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+while True:
+    p = clue.proximity
+    if p > 10:
+        clue.start_tone(200 + p * 5)   # closer hand = higher note
+    else:
+        clue.stop_tone()</code></pre>
+
+  <h3>Swipe detector</h3>
+  <p><code>clue.gesture</code> gives <b>0</b> = nothing, <b>1</b> = up, <b>2</b> = down, <b>3</b> = left, <b>4</b> = right. Wave your hand about 5 to 10 cm above the sensor.</p>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+names = ["", "UP", "DOWN", "LEFT", "RIGHT"]
+screen = clue.simple_text_display(title="Swipe!", text_scale=4)
+
+while True:
+    g = clue.gesture
+    if g != 0:
+        screen[1].text = names[g]    # use the number to pick from the list
+        screen.show()</code></pre>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Swipe left/right to change the NeoPixel color through a list, like flipping pages.</div>
+  <button class="btn done-btn" data-id="m9" data-xp="150">Mission complete!</button>
+</section>
+
+<!-- M10 COLOR -->
+<section class="card" id="m10" style="--c:var(--green)">
+  <span class="tag">Mission 10</span>
+  <div class="mission-head"><h2><span class="emoji">🎨</span>Color Copycat</h2><span class="xpchip">+150 XP</span></div>
+  <p>The same sensor can see <b>color</b>! <code>clue.color</code> gives 4 numbers: <b>red, green, blue, clear</b> (clear = total brightness). Turn on the white LEDs so it can see better.</p>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+clue.white_leds = True
+clue.pixel.brightness = 0.3
+screen = clue.simple_text_display(title="Color Copycat", text_scale=2)
+
+while True:
+    r, g, b, c = clue.color
+    screen[0].text = f"R {r}"
+    screen[1].text = f"G {g}"
+    screen[2].text = f"B {b}"
+    screen.show()
+
+    biggest = max(r, g, b, 1)            # the 1 stops us dividing by zero
+    # scale so the strongest color becomes 255
+    clue.pixel.fill((r * 255 // biggest, g * 255 // biggest, b * 255 // biggest))
+    time.sleep(0.1)</code></pre>
+  <p>Hold a colorful LEGO brick, sticky note or marker cap right on top of the sensor. The NeoPixel copies it!</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "fruit sorter": show "RED!", "GREEN!" or "BLUE!" on screen depending on which number is biggest.</div>
+  <button class="btn done-btn" data-id="m10" data-xp="150">Mission complete!</button>
+</section>
+
+<!-- M11 WEATHER -->
+<section class="card" id="m11" style="--c:var(--cyan)">
+  <span class="tag">Mission 11</span>
+  <div class="mission-head"><h2><span class="emoji">⛅</span>Weather Station</h2><span class="xpchip">+150 XP</span></div>
+  <p>Four air sensors in one program:</p>
+  <ul>
+    <li><code>clue.temperature</code>: degrees Celsius</li>
+    <li><code>clue.humidity</code>: % of water in the air</li>
+    <li><code>clue.pressure</code>: air pressure in hPa (falling pressure often means rain is coming!)</li>
+    <li><code>clue.altitude</code>: height in meters, worked out from pressure</li>
+  </ul>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+# Look up today's sea-level pressure for your town on a weather site
+# and put it here to make altitude more accurate.
+clue.sea_level_pressure = 1013.25
+
+screen = clue.simple_text_display(title="Weather Station", text_scale=2,
+                                  colors=((255, 80, 80), (80, 180, 255), (255, 255, 0), (80, 255, 120)))
+
+while True:
+    temp_c = clue.temperature
+    temp_f = temp_c * 9 / 5 + 32
+    screen[0].text = f"{temp_c:.1f}C / {temp_f:.0f}F"
+    screen[1].text = f"Humid {clue.humidity:.0f}%"
+    screen[2].text = f"{clue.pressure:.0f} hPa"
+    screen[3].text = f"Alt {clue.altitude:.0f} m"
+    screen.show()
+    time.sleep(1)</code></pre>
+  <div class="box tip"><b>🔬 Experiments</b><br>Breathe on the board: humidity shoots up! Carry it up the stairs: altitude should climb by about 3 m per floor. Hold it in your hand: temperature rises.</div>
+  <div class="box warn"><b>🌡️ Heads up</b><br>The board warms itself a little, so its temperature often reads a couple of degrees high. Compare with a real thermometer and subtract the difference: that's <b>calibration</b> again.</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Turn the NeoPixel blue when it's cold, green when comfy, and red when hot.</div>
+  <button class="btn done-btn" data-id="m11" data-xp="150">Mission complete!</button>
+</section>
+
+<!-- M12 SOUND -->
+<section class="card" id="m12" style="--c:var(--yellow)">
+  <span class="tag">Mission 12</span>
+  <div class="mission-head"><h2><span class="emoji">👏</span>Clap Detector</h2><span class="xpchip">+150 XP</span></div>
+  <p>The <b>microphone</b> can't record words here, but it measures how <b>loud</b> it is. <code>clue.sound_level</code> gives a number, and <code>clue.loud_sound()</code> is <code>True</code> when it's louder than a threshold.</p>
+  <h3>Noise meter</h3>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+while True:
+    level = clue.sound_level
+    print((level,))          # the comma makes it a tuple, so the Plotter can graph it!
+    time.sleep(0.05)</code></pre>
+  <h3>Clap-on light</h3>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+light_on = False
+
+while True:
+    if clue.loud_sound(sound_threshold=500):
+        light_on = not light_on          # flip True ↔ False
+        clue.white_leds = light_on
+        time.sleep(0.5)                  # ignore the echo of the same clap</code></pre>
+  <p>Too jumpy? Make <code>sound_threshold</code> bigger. Not hearing you? Make it smaller. Check the noise meter to pick a good number.</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "library monitor": the screen shows a 😀 message when it's quiet and "SHHH!" when it gets too loud.</div>
+  <button class="btn done-btn" data-id="m12" data-xp="150">Mission complete!</button>
+</section>
+
+<!-- BOSS -->
+<section class="card" id="boss" style="--c:var(--red)">
+  <span class="tag">⚔️ Boss Level</span>
+  <div class="mission-head"><h2><span class="emoji">⚡</span>Reaction Race</h2><span class="xpchip">+300 XP</span></div>
+  <p>Time to combine powers: <b>screen + NeoPixel + buttons + speaker + time + random</b>. Wait for green, then hit A as fast as you can. Press too early and you lose!</p>
+  <pre><code class="language-python">import time
+import random
+from adafruit_clue import clue
+
+clue.pixel.brightness = 0.3
+screen = clue.simple_text_display(title="REACTION RACE", text_scale=2)
+best = None                      # None = "no score yet"
+
+def show(line0, line1="", line2=""):
+    screen[0].text = line0
+    screen[1].text = line1
+    screen[2].text = line2
+    screen.show()
+
+while True:
+    best_text = "Best: --" if best is None else f"Best: {best} ms"
+    show("Press A", "to start", best_text)
+    while not clue.button_a:     # wait for A
+        pass
+    while clue.button_a:         # wait for A to be let go
+        pass
+
+    show("Get ready...", "wait for GREEN")
+    clue.pixel.fill((255, 0, 0))
+    wait = random.uniform(1.5, 4.0)
+    start_wait = time.monotonic()
+    cheated = False
+    while time.monotonic() - start_wait < wait:
+        if clue.button_a:        # pressed too early!
+            cheated = True
+            break
+
+    if cheated:
+        clue.pixel.fill((255, 0, 255))
+        clue.play_tone(150, 0.6)
+        show("TOO EARLY!", "Try again")
+        time.sleep(2)
+        continue                 # jump back to the top of the loop
+
+    clue.pixel.fill((0, 255, 0))
+    clue.play_tone(1000, 0.05)
+    go = time.monotonic()
+    while not clue.button_a:
+        pass
+    ms = int((time.monotonic() - go) * 1000)
+    clue.pixel.fill((0, 0, 0))
+
+    if best is None or ms < best:
+        best = ms
+        clue.play_tone(523, 0.1)
+        clue.play_tone(784, 0.2)
+        show(f"{ms} ms", "NEW RECORD!")
+    else:
+        show(f"{ms} ms", "Nice try!")
+    time.sleep(2)
+    while clue.button_a:
+        pass</code></pre>
+  <p>New things here: <code>time.monotonic()</code> is a stopwatch that counts seconds since the board started, <code>break</code> jumps out of a loop, <code>continue</code> skips to the next round, and <code>None</code> means "nothing yet".</p>
+  <div class="box challenge"><b>🏆 Boss Challenges</b><br>
+    ① Make it 2-player: A vs. B, and whoever presses first after green wins.<br>
+    ② Use <code>clue.shake()</code> instead of a button: "shake when green!"<br>
+    ③ Invent your own game. Some ideas: a step counter (shake = step), a tilt maze on the NeoPixel, a pet that gets hungry and needs you to press buttons, or a data logger that tracks temperature all day.</div>
+  <button class="btn done-btn" data-id="boss" data-xp="300">I beat the boss!</button>
+</section>
+
+<!-- TROPHY -->
+<section class="card trophy" id="trophy" style="--c:var(--yellow)" hidden>
+  <span class="tag">🏆 Quest Complete</span>
+  <span class="big">🏆</span>
+  <h2>CLUE MASTER!</h2>
+  <p>You used every gadget on the CLUE: screen, NeoPixel, LEDs, buttons, speaker, touch pads, accelerometer, gyro, magnetometer, proximity, gesture, color, temperature, humidity, pressure, altitude and microphone. That's real embedded programming. Go build something awesome!</p>
+</section>
+
+<!-- CHEAT SHEET -->
+<section class="card" id="cheat" style="--c:var(--purple)">
+  <span class="tag">📜 Cheat Sheet</span>
+  <h2>Every CLUE power on one page</h2>
+  <p>Always start with <code>from adafruit_clue import clue</code>.</p>
+  <div class="tbl"><table>
+    <tr><th>Gadget</th><th>Code</th><th>What you get</th></tr>
+    <tr><td>Screen (easy)</td><td><code>s = clue.simple_text_display(title="Hi", text_scale=2)</code><br><code>s[0].text = "..."</code> &nbsp; <code>s.show()</code></td><td>Lines of text</td></tr>
+    <tr><td>Screen (full)</td><td><code>clue.display.root_group = group</code></td><td>Your own displayio drawing</td></tr>
+    <tr><td>NeoPixel</td><td><code>clue.pixel.fill((r, g, b))</code><br><code>clue.pixel.brightness = 0.2</code></td><td>Any color, 0 to 255 each</td></tr>
+    <tr><td>Red LED</td><td><code>clue.red_led = True</code></td><td>On / off</td></tr>
+    <tr><td>White LEDs</td><td><code>clue.white_leds = True</code></td><td>On / off</td></tr>
+    <tr><td>Buttons</td><td><code>clue.button_a</code>, <code>clue.button_b</code></td><td>True while pressed</td></tr>
+    <tr><td>Touch pads</td><td><code>clue.touch_0</code>, <code>clue.touch_1</code>, <code>clue.touch_2</code></td><td>True while touched</td></tr>
+    <tr><td>Speaker</td><td><code>clue.play_tone(440, 0.5)</code><br><code>clue.start_tone(440)</code> / <code>clue.stop_tone()</code></td><td>Beeps and notes</td></tr>
+    <tr><td>Microphone</td><td><code>clue.sound_level</code><br><code>clue.loud_sound(sound_threshold=200)</code></td><td>Loudness number / True if loud</td></tr>
+    <tr><td>Accelerometer</td><td><code>x, y, z = clue.acceleration</code></td><td>m/s² (gravity ≈ 9.8)</td></tr>
+    <tr><td>Shake</td><td><code>clue.shake(shake_threshold=30)</code></td><td>True if shaken</td></tr>
+    <tr><td>Gyroscope</td><td><code>x, y, z = clue.gyro</code></td><td>Spin speed, degrees/second</td></tr>
+    <tr><td>Magnetometer</td><td><code>x, y, z = clue.magnetic</code></td><td>Microteslas</td></tr>
+    <tr><td>Proximity</td><td><code>clue.proximity</code></td><td>0 (far) to 255 (close)</td></tr>
+    <tr><td>Gesture</td><td><code>clue.gesture</code></td><td>0 none, 1 up, 2 down, 3 left, 4 right</td></tr>
+    <tr><td>Color</td><td><code>r, g, b, c = clue.color</code></td><td>Red, green, blue, clear light</td></tr>
+    <tr><td>Temperature</td><td><code>clue.temperature</code></td><td>°C</td></tr>
+    <tr><td>Humidity</td><td><code>clue.humidity</code></td><td>% relative humidity</td></tr>
+    <tr><td>Pressure</td><td><code>clue.pressure</code></td><td>hPa</td></tr>
+    <tr><td>Altitude</td><td><code>clue.sea_level_pressure = 1013.25</code><br><code>clue.altitude</code></td><td>Meters</td></tr>
+  </table></div>
+  <h3>More adventures</h3>
+  <ul>
+    <li><a href="https://learn.adafruit.com/adafruit-clue" target="_blank" rel="noopener">Adafruit CLUE guide</a>: the official manual</li>
+    <li><a href="https://docs.circuitpython.org/projects/clue/en/latest/" target="_blank" rel="noopener">adafruit_clue library docs</a>: every command explained</li>
+    <li><a href="https://learn.adafruit.com/search?q=clue" target="_blank" rel="noopener">CLUE projects on Adafruit Learn</a>: tons of project ideas</li>
+    <li><a href="https://github.com/adafruit/circuitpython" target="_blank" rel="noopener">CircuitPython on GitHub</a>: the source code of CircuitPython itself</li>
+  </ul>
+  <button class="btn" id="reset" style="background:#fff;color:var(--ink);font-size:.9rem">↺ Reset my XP</button>
+</section>
+
+</main>
+
+<footer>Made with 💜 for young makers · Not an official Adafruit page · Adafruit, CLUE and CircuitPython belong to Adafruit Industries</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script>
+const KEY = "clueQuestDone";
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
+const save = d => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} };
+const btns = [...document.querySelectorAll(".done-btn")];
+const total = btns.reduce((s, b) => s + +b.dataset.xp, 0);
+
+function render() {
+  const done = load();
+  let xp = 0;
+  btns.forEach(b => {
+    const on = done.includes(b.dataset.id);
+    b.closest("section").classList.toggle("done", on);
+    if (!b.dataset.label) b.dataset.label = b.textContent;
+    b.textContent = on ? "✔ Done! (click to undo)" : b.dataset.label;
+    if (on) xp += +b.dataset.xp;
+  });
+  document.getElementById("xpText").textContent = xp + " XP";
+  document.getElementById("xpFill").style.width = (xp / total * 100) + "%";
+  document.getElementById("lvl").textContent = "Lv " + (1 + Math.floor(done.length / 2));
+  document.getElementById("trophy").hidden = done.length !== btns.length;
+}
+
+function burst(x, y) {
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement("span");
+    s.className = "pop";
+    s.textContent = ["⭐", "🎉", "✨", "💜", "⚡"][i % 5];
+    s.style.left = x + "px"; s.style.top = y + "px";
+    s.style.setProperty("--dx", (Math.random() * 240 - 120) + "px");
+    s.style.setProperty("--dy", (Math.random() * -220 - 40) + "px");
+    s.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+btns.forEach(b => b.addEventListener("click", e => {
+  let done = load();
+  const id = b.dataset.id;
+  if (done.includes(id)) done = done.filter(d => d !== id);
+  else { done.push(id); burst(e.clientX, e.clientY); }
+  save(done); render();
+  if (done.length === btns.length) document.getElementById("trophy").scrollIntoView();
+}));
+document.getElementById("reset").addEventListener("click", () => { save([]); render(); });
+
+// copy buttons on code blocks
+document.querySelectorAll("pre").forEach(pre => {
+  const wrap = document.createElement("div");
+  wrap.className = "codewrap";
+  pre.replaceWith(wrap); wrap.appendChild(pre);
+  const c = document.createElement("button");
+  c.className = "copy"; c.textContent = "Copy";
+  c.onclick = () => navigator.clipboard.writeText(pre.innerText).then(() => {
+    c.textContent = "Copied!"; setTimeout(() => c.textContent = "Copy", 1200);
+  });
+  wrap.appendChild(c);
+});
+
+render();
+</script>
+</body>
+</html>
