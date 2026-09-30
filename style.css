@@ -1,3 +1,4 @@
+[hidden]{display:none!important}
 :root{
   --ink:#1b1340; --paper:#fff8e7; --card:#ffffff;
   --pink:#ff4fa3; --cyan:#22d3ee; --yellow:#ffd23f; --green:#3ee07a; --purple:#8b5cf6; --orange:#ff8a3d; --blue:#3b82f6; --red:#ff4d4d;
@@ -5,7 +6,7 @@
   --radius:18px;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--tb,62px) + var(--tabsh,0px) + 12px)}
 body{margin:0;font-family:Ubuntu,system-ui,sans-serif;font-weight:700;font-size:18px;line-height:1.6;color:var(--ink);background:var(--paper);
   background-image:radial-gradient(var(--ink) 1px,transparent 1.5px);background-size:28px 28px;background-attachment:fixed}
 h1,h2,h3{font-family:Ubuntu,system-ui,sans-serif;line-height:1.1;margin:.2em 0 .4em}
@@ -151,3 +152,12 @@ footer{text-align:center;padding:40px 16px 60px;font-size:.9rem}
 .title-svg .t-pop{fill:var(--pink);stroke:var(--ink);stroke-width:var(--sw,80);paint-order:stroke;filter:drop-shadow(4px 4px 0 var(--ink))}
 .logo-svg{display:block;height:1.05em;width:auto;overflow:visible}
 .logo-svg .t-logo{fill:var(--yellow)}
+
+/* Level tabs on the main page */
+.tabs{position:sticky;top:var(--tb,62px);z-index:40;display:flex;gap:8px;overflow-x:auto;padding:10px 4px 12px;margin:8px 0 -12px;background:var(--paper);scrollbar-width:thin}
+.tab{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:74px;font:700 .78rem Ubuntu,system-ui,sans-serif;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:12px;padding:6px 8px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;position:relative}
+.tab-emoji{font-size:1.3rem;line-height:1}
+.tab:hover{background:#fff3d6}
+.tab[aria-selected=true]{background:var(--yellow);transform:translateY(-2px);box-shadow:3px 5px 0 var(--ink)}
+.tab.tab-done::after{content:"✔";position:absolute;top:-8px;right:-8px;background:var(--green);border:2px solid var(--ink);border-radius:50%;width:20px;height:20px;font-size:.7rem;display:grid;place-items:center}
+.next-btn{margin-left:10px;background:var(--purple)}
