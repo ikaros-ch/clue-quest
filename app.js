@@ -61,3 +61,9 @@ document.querySelectorAll("pre").forEach(pre => {
 });
 
 render();
+
+// language switch keeps you on the section you're reading
+document.querySelector(".lang").addEventListener("click", e => {
+  const here = [...document.querySelectorAll("section[id]")].filter(s => !s.hidden && s.getBoundingClientRect().top < innerHeight / 3).pop();
+  if (here) e.currentTarget.href = e.currentTarget.getAttribute("href") + "#" + here.id;
+});
