@@ -5,108 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CLUE Quest! Learn CircuitPython with the Adafruit CLUE</title>
 <meta name="description" content="A fun, mission-based CircuitPython tutorial for the Adafruit CLUE, made for middle schoolers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🚀%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<style>
-:root{
-  --ink:#1b1340; --paper:#fff8e7; --card:#ffffff;
-  --pink:#ff4fa3; --cyan:#22d3ee; --yellow:#ffd23f; --green:#3ee07a; --purple:#8b5cf6; --orange:#ff8a3d; --blue:#3b82f6; --red:#ff4d4d;
-  --shadow:6px 6px 0 var(--ink);
-  --radius:18px;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{margin:0;font-family:Nunito,system-ui,sans-serif;font-size:18px;line-height:1.6;color:var(--ink);background:var(--paper);
-  background-image:radial-gradient(var(--ink) 1px,transparent 1.5px);background-size:28px 28px;background-attachment:fixed}
-h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.1;margin:.2em 0 .4em}
-h2{font-size:2.2rem} h3{font-size:1.4rem;margin-top:1.4em}
-a{color:var(--purple);font-weight:700}
-code{font-family:"JetBrains Mono",monospace;font-size:.88em;background:#efe6ff;padding:.1em .35em;border-radius:6px}
-pre[class*=language-]{border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);margin:1em 0;font-size:15px}
-pre code{background:none;padding:0}
-.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
-
-/* top bar */
-.topbar{position:sticky;top:0;z-index:50;background:var(--ink);color:#fff;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.topbar .logo{font-family:"Baloo 2";font-size:1.4rem;color:var(--yellow);text-decoration:none}
-.xp{flex:1;min-width:180px;display:flex;align-items:center;gap:10px;font-weight:900;font-size:.9rem}
-.xpbar{flex:1;height:18px;background:#3a2f70;border-radius:99px;border:2px solid #fff;overflow:hidden}
-.xpfill{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--yellow),var(--green));transition:width .6s cubic-bezier(.3,1.6,.5,1)}
-.topbar nav{display:flex;gap:6px;flex-wrap:wrap}
-.topbar nav a{color:#fff;text-decoration:none;font-size:.85rem;padding:4px 10px;border:2px solid #fff;border-radius:99px}
-.topbar nav a:hover{background:var(--pink)}
-
-/* hero */
-.hero{padding:48px 0 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center}
-.hero h1{font-size:clamp(2.6rem,7vw,4.6rem);margin:0}
-.hero h1 span{color:var(--pink);-webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink)}
-.hero p.lead{font-size:1.25rem}
-.sticker{display:inline-block;background:var(--yellow);border:3px solid var(--ink);border-radius:99px;padding:4px 14px;font-weight:900;transform:rotate(-3deg);box-shadow:3px 3px 0 var(--ink)}
-.btn{display:inline-block;background:var(--pink);color:#fff;font-weight:900;font-size:1.1rem;text-decoration:none;border:3px solid var(--ink);border-radius:14px;padding:10px 20px;box-shadow:var(--shadow);transition:transform .1s, box-shadow .1s;cursor:pointer;font-family:inherit}
-.btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
-.btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
-.clue-svg{width:100%;max-width:400px;filter:drop-shadow(8px 8px 0 var(--ink));animation:float 4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-10px) rotate(-2deg)}}
-#screenText{animation:blink 1.2s steps(2) infinite}
-@keyframes blink{50%{opacity:.25}}
-
-/* cards */
-section.card{background:var(--card);border:4px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 28px;margin:40px 0;position:relative}
-.card .tag{position:absolute;top:-18px;left:20px;background:var(--c,var(--cyan));border:3px solid var(--ink);border-radius:10px;padding:2px 12px;font-family:"Baloo 2";font-weight:800;box-shadow:3px 3px 0 var(--ink)}
-.card h2 .emoji{font-size:1.1em;display:inline-block;margin-right:.2em}
-.card.done{background:#eafff0}
-.card.done .tag::after{content:" ✔"}
-.mission-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
-.xpchip{font-weight:900;background:var(--ink);color:var(--yellow);border-radius:99px;padding:2px 12px;font-size:.9rem}
-
-.box{border:3px dashed var(--ink);border-radius:14px;padding:12px 18px;margin:1em 0;background:#fffbea}
-.box.tip{background:#e6fbff;border-color:#0891b2}
-.box.warn{background:#fff0f0;border-color:var(--red)}
-.box.challenge{background:#f3edff;border-style:solid;border-color:var(--purple)}
-.box > b:first-child{font-family:"Baloo 2";font-size:1.15rem}
-
-ol.steps{counter-reset:s;list-style:none;padding-left:0}
-ol.steps>li{counter-increment:s;position:relative;padding-left:54px;margin:14px 0;min-height:40px}
-ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);display:grid;place-items:center;font-weight:900;font-family:"Baloo 2"}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:1em 0}
-.part{border:3px solid var(--ink);border-radius:14px;padding:12px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
-.part .big{font-size:2rem}
-.part b{display:block;font-family:"Baloo 2";font-size:1.1rem}
-.part small{display:block;color:#5b537f}
-
-.tbl{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:.95rem}
-th,td{border:2px solid var(--ink);padding:6px 10px;text-align:left;vertical-align:top}
-th{background:var(--yellow);font-family:"Baloo 2"}
-tr:nth-child(even) td{background:#faf5ff}
-
-.done-btn{margin-top:14px;background:var(--green);color:var(--ink)}
-.card.done .done-btn{background:#fff}
-.copy{position:absolute;top:8px;right:8px;font:700 12px Nunito;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;padding:2px 8px;cursor:pointer}
-.codewrap{position:relative}
-
-details{border:3px solid var(--ink);border-radius:12px;padding:8px 14px;margin:.8em 0;background:#fff}
-summary{cursor:pointer;font-weight:900}
-
-.pop{position:fixed;pointer-events:none;font-size:28px;z-index:99;animation:pop 1s ease-out forwards}
-@keyframes pop{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
-
-.trophy{text-align:center;font-size:1.3rem}
-.trophy .big{font-size:5rem;display:block}
-footer{text-align:center;padding:40px 16px 60px;font-size:.9rem}
-
-@media (max-width:760px){
-  .hero{grid-template-columns:1fr;text-align:center}
-  .clue-svg{max-width:280px;margin:auto;display:block}
-  section.card{padding:20px 16px}
-  h2{font-size:1.8rem}
-  .topbar nav{display:none}
-}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -114,7 +18,7 @@ footer{text-align:center;padding:40px 16px 60px;font-size:.9rem}
   <a class="logo" href="#top">CLUE Quest</a>
   <div class="xp"><span id="xpText">0 XP</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div><span id="lvl">Lv 1</span></div>
   <nav>
-    <a href="#python">Python</a><a href="#setup">Setup</a><a href="#m1">Missions</a><a href="#boss">Boss</a><a href="#cheat">Cheat Sheet</a>
+    <a href="#python">Python</a><a href="#setup">Setup</a><a href="#m1">Missions</a><a href="#boss">Boss</a><a href="#cheat">Cheat Sheet</a><a href="el/">🇬🇷 Ελληνικά</a>
   </nav>
 </header>
 
@@ -300,10 +204,12 @@ circup install adafruit_clue</code></pre>
   <h3>Part C: Connect to the code editor</h3>
   <ol class="steps">
     <li>Open <a href="https://code.circuitpython.org/" target="_blank" rel="noopener">code.circuitpython.org</a> in <b>Chrome</b> or <b>Edge</b>.</li>
-    <li>Choose <b>USB</b> as the connection type and click <b>Connect</b>. Pick your CLUE from the list of devices.</li>
-    <li>When it asks for a folder, choose the <b>CIRCUITPY</b> drive and allow the editor to <b>edit files</b>.</li>
-    <li>Open <code>code.py</code>. This is the file the CLUE runs automatically.</li>
-    <li>Click <b>Serial</b> to open the console. This is where <code>print()</code> messages show up.</li>
+    <li>A box pops up asking how to connect. Click <b>USB</b>.</li>
+    <li><b>Step 1:</b> click <b>Connect to Device</b>. Chrome shows a list: pick <b>CLUE nRF52840 Express - CircuitPython CDC control (COM…)</b> and click <b>Connect</b>.</li>
+    <li><b>Step 2:</b> click <b>Select New Folder</b>, choose the <b>CIRCUITPY</b> drive and click <b>Select Folder</b>. Chrome asks "Allow this site to edit files?": click <b>Allow</b>, then click <b>OK</b>.</li>
+    <li>A <b>Device Info</b> box shows your board and version. If it says <i>"Update available … alpha"</i>, ignore it (alpha = unfinished test version) and click <b>Close</b>.</li>
+    <li>The editor starts with an empty <b>[New Document]</b>. Click <b>Open</b> and double-click <code>code.py</code>. This is the file the CLUE runs automatically.</li>
+    <li>Click <b>Serial</b> (bottom left) to open the console on the right. This is where <code>print()</code> messages show up. It has buttons for <b>Halt</b> (stop your program), <b>Restart</b>, <b>Clear</b> and <b>Plotter</b> (live graphs!).</li>
   </ol>
   <div class="box tip"><b>🪄 The golden rule</b><br>
     Edit <code>code.py</code> → click <b>Save + Run</b> → the CLUE restarts and runs your code instantly. That's it!</div>
@@ -320,7 +226,7 @@ print("It is", clue.temperature, "degrees C in here")</code></pre>
     <ul>
       <li><b>Red error text?</b> Read the <i>last</i> line and look at the <b>line number</b>. Most bugs are typos, a missing <code>:</code>, or wrong indentation.</li>
       <li><b>Errors also show on the CLUE's screen</b>, which is handy!</li>
-      <li><b>REPL</b> = a live Python playground. Click in the Serial console and press <b>Ctrl + C</b>, then any key. You get a <code>&gt;&gt;&gt;</code> prompt. Type <code>2 + 2</code> and press Enter! Try the Python lessons above here. Press <b>Ctrl + D</b> to go back to running <code>code.py</code>.</li>
+      <li><b>REPL</b> = a live Python playground. Click the <b>Halt</b> button (or click in the Serial console and press <b>Ctrl + C</b>), then press any key. You get a <code>&gt;&gt;&gt;</code> prompt. Type <code>2 + 2</code> and press Enter! Try the Python lessons above here. Press <b>Ctrl + D</b> to go back to running <code>code.py</code>.</li>
       <li><b>Editor can't see the board?</b> Unplug, plug back in, refresh the page, and connect again.</li>
       <li>The editor also supports <b>Bluetooth</b> for the CLUE, but USB is the easiest way to start.</li>
     </ul>
@@ -400,7 +306,12 @@ while True:
         clue.red_led = False     # red LED off
         time.sleep(0.1)</code></pre>
   <p>And the white LEDs are one line:</p>
-  <pre><code class="language-python">clue.white_leds = True    # flashlight ON (False turns it off)</code></pre>
+  <pre><code class="language-python">from adafruit_clue import clue
+
+clue.white_leds = True    # flashlight ON (False turns it off)
+
+while True:
+    pass</code></pre>
   <div class="box warn"><b>😎 Careful</b><br>Don't stare into the white LEDs, they're really bright!</div>
   <div class="box challenge"><b>🏆 Challenge</b><br>Make a police siren: flash red and blue on the NeoPixel, and blink the white LEDs every time it turns blue.</div>
   <button class="btn done-btn" data-id="m2" data-xp="100">Mission complete!</button>
@@ -499,7 +410,7 @@ while True:
 <section class="card" id="m6" style="--c:var(--orange)">
   <span class="tag">Mission 6</span>
   <div class="mission-head"><h2><span class="emoji">🎱</span>Shake &amp; Tilt</h2><span class="xpchip">+150 XP</span></div>
-  <p>The <b>accelerometer</b> measures pushes and pulls, including gravity! <code>clue.acceleration</code> gives 3 numbers <b>(x, y, z)</b>. Lying flat, z is about 9.8, which is gravity pulling down.</p>
+  <p>The <b>accelerometer</b> measures pushes and pulls, including gravity! <code>clue.acceleration</code> gives 3 numbers <b>(x, y, z)</b>. Lying flat and face up, z is about -9.8: that's gravity pulling down. Flip it over and it becomes +9.8!</p>
   <pre><code class="language-python">import time
 from adafruit_clue import clue
 
@@ -713,7 +624,7 @@ while True:
         clue.white_leds = light_on
         time.sleep(0.5)                  # ignore the echo of the same clap</code></pre>
   <p>Too jumpy? Make <code>sound_threshold</code> bigger. Not hearing you? Make it smaller. Check the noise meter to pick a good number.</p>
-  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "library monitor": the screen shows a 😀 message when it's quiet and "SHHH!" when it gets too loud.</div>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Make a "library monitor": the screen shows a happy message like "Nice and quiet" when it's quiet (the CLUE's font can't draw emoji) and "SHHH!" when it gets too loud.</div>
   <button class="btn done-btn" data-id="m12" data-xp="150">Mission complete!</button>
 </section>
 
@@ -840,67 +751,6 @@ while True:
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-<script>
-const KEY = "clueQuestDone";
-const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
-const save = d => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} };
-const btns = [...document.querySelectorAll(".done-btn")];
-const total = btns.reduce((s, b) => s + +b.dataset.xp, 0);
-
-function render() {
-  const done = load();
-  let xp = 0;
-  btns.forEach(b => {
-    const on = done.includes(b.dataset.id);
-    b.closest("section").classList.toggle("done", on);
-    if (!b.dataset.label) b.dataset.label = b.textContent;
-    b.textContent = on ? "✔ Done! (click to undo)" : b.dataset.label;
-    if (on) xp += +b.dataset.xp;
-  });
-  document.getElementById("xpText").textContent = xp + " XP";
-  document.getElementById("xpFill").style.width = (xp / total * 100) + "%";
-  document.getElementById("lvl").textContent = "Lv " + (1 + Math.floor(done.length / 2));
-  document.getElementById("trophy").hidden = done.length !== btns.length;
-}
-
-function burst(x, y) {
-  for (let i = 0; i < 14; i++) {
-    const s = document.createElement("span");
-    s.className = "pop";
-    s.textContent = ["⭐", "🎉", "✨", "💜", "⚡"][i % 5];
-    s.style.left = x + "px"; s.style.top = y + "px";
-    s.style.setProperty("--dx", (Math.random() * 240 - 120) + "px");
-    s.style.setProperty("--dy", (Math.random() * -220 - 40) + "px");
-    s.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 1000);
-  }
-}
-
-btns.forEach(b => b.addEventListener("click", e => {
-  let done = load();
-  const id = b.dataset.id;
-  if (done.includes(id)) done = done.filter(d => d !== id);
-  else { done.push(id); burst(e.clientX, e.clientY); }
-  save(done); render();
-  if (done.length === btns.length) document.getElementById("trophy").scrollIntoView();
-}));
-document.getElementById("reset").addEventListener("click", () => { save([]); render(); });
-
-// copy buttons on code blocks
-document.querySelectorAll("pre").forEach(pre => {
-  const wrap = document.createElement("div");
-  wrap.className = "codewrap";
-  pre.replaceWith(wrap); wrap.appendChild(pre);
-  const c = document.createElement("button");
-  c.className = "copy"; c.textContent = "Copy";
-  c.onclick = () => navigator.clipboard.writeText(pre.innerText).then(() => {
-    c.textContent = "Copied!"; setTimeout(() => c.textContent = "Copy", 1200);
-  });
-  wrap.appendChild(c);
-});
-
-render();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
