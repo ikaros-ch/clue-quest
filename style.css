@@ -10,6 +10,7 @@ body{margin:0;font-family:Nunito,system-ui,sans-serif;font-size:18px;line-height
   background-image:radial-gradient(var(--ink) 1px,transparent 1.5px);background-size:28px 28px;background-attachment:fixed}
 h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.1;margin:.2em 0 .4em}
 h2{font-size:2.2rem} h3{font-size:1.4rem;margin-top:1.4em}
+h4{font-family:"Baloo 2",Nunito,sans-serif;font-size:1.15rem;margin:1.2em 0 .2em}
 a{color:var(--purple);font-weight:700;overflow-wrap:anywhere}
 code{font-family:"JetBrains Mono",monospace;font-size:.88em;background:#efe6ff;padding:.1em .35em;border-radius:6px}
 pre[class*=language-]{border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);margin:1em 0;font-size:15px}

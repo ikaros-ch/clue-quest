@@ -94,8 +94,28 @@
 <!-- PYTHON -->
 <section class="card" id="python" style="--c:var(--yellow)">
   <span class="tag">Επίπεδο 1</span>
-  <h2><span class="emoji">🐍</span>Python σε 10 λεπτά</h2>
+  <h2><span class="emoji">🐍</span>Python σε 20 λεπτά</h2>
   <p>Η <b>CircuitPython</b> είναι Python φτιαγμένη για μικροσκοπικές πλακέτες. Αν ξέρεις ήδη Python, ρίξε μια γρήγορη ματιά και προχώρα. Αν όχι, αυτές είναι οι μόνες ιδέες που χρειάζεσαι για όλη την περιπέτεια. Μετά την Εγκατάσταση, δοκίμασέ τες στο REPL (δες την «Επίλυση προβλημάτων») ή μέσα στο <code>code.py</code>.</p>
+
+  <details open><summary>🧱 Έρχεσαι από Scratch ή MakeCode;</summary>
+  <p>Ξέρεις ήδη προγραμματισμό! Η Python απλώς χρησιμοποιεί λέξεις που πληκτρολογείς αντί για τουβλάκια. Να η «μετάφραση»:</p>
+  <div class="tbl"><table>
+    <tr><th>Τουβλάκι</th><th>Python</th></tr>
+    <tr><td>για πάντα (forever)</td><td><code>while True:</code></td></tr>
+    <tr><td>επανάλαβε 10</td><td><code>for i in range(10):</code></td></tr>
+    <tr><td>εάν &lt;&gt; τότε / αλλιώς</td><td><code>if ...:<br>else:</code></td></tr>
+    <tr><td>όρισε score σε 0</td><td><code>score = 0</code></td></tr>
+    <tr><td>άλλαξε score κατά 1</td><td><code>score += 1</code></td></tr>
+    <tr><td>πες Γεια / show string</td><td><code>print("Hello")</code></td></tr>
+    <tr><td>περίμενε 1 δευτ. / pause 1000 ms</td><td><code>time.sleep(1)</code></td></tr>
+    <tr><td>φτιάξε ένα τουβλάκι / function</td><td><code>def my_block():</code></td></tr>
+    <tr><td>λίστα / πίνακας (array)</td><td><code>things = [1, 2, 3]</code></td></tr>
+    <tr><td>πρόσθεσε κάτι στη λίστα</td><td><code>things.append(4)</code></td></tr>
+    <tr><td>στοιχείο 1 της λίστας</td><td><code>things[0]  (η Python ξεκινάει από 0!)</code></td></tr>
+    <tr><td>μήκος λίστας</td><td><code>len(things)</code></td></tr>
+    <tr><td>διάλεξε τυχαίο 1 έως 6</td><td><code>random.randint(1, 6)</code></td></tr>
+  </table></div>
+  </details>
 
   <h3>1. Σχόλια: σημειώσεις για ανθρώπους</h3>
   <p>Ό,τι γράψεις μετά το <code>#</code> ο υπολογιστής το αγνοεί.</p>
@@ -110,9 +130,21 @@ print(2 + 3)      # τυπώνει 5</code></pre>
   <pre><code class="language-python">score = 0          # ένας αριθμός
 name = "Robo"      # το κείμενο (ένα "string") μπαίνει σε εισαγωγικά
 score = score + 10 # τώρα το score είναι 10
+score += 5         # συντόμευση για score = score + 5, τώρα 15
 print(name, "έχει", score, "πόντους")</code></pre>
 
-  <h3>4. True / False και if</h3>
+  <h3>4. Μαθηματικά: η Python είναι αριθμομηχανή</h3>
+  <pre><code class="language-python">print(7 + 2)    # 9   πρόσθεση
+print(7 - 2)    # 5   αφαίρεση
+print(7 * 2)    # 14  πολλαπλασιασμός (αστεράκι, όχι x)
+print(7 / 2)    # 3.5 διαίρεση
+print(7 // 2)   # 3   διαίρεση χωρίς το υπόλοιπο
+print(7 % 2)    # 1   ΜΟΝΟ το υπόλοιπο
+print(2 ** 3)   # 8   δύναμη: 2 x 2 x 2
+print(round(3.7))  # 4</code></pre>
+  <p>Το <code>%</code> είναι πολύ χρήσιμο: <code>n % 2 == 0</code> σημαίνει «το n είναι ζυγός», και το <code>angle % 360</code> κρατάει μια γωνία από 0 έως 359.</p>
+
+  <h3>5. True / False και if</h3>
   <p><b>Η εσοχή μετράει!</b> Οι γραμμές που είναι πιο μέσα κατά 4 κενά ανήκουν στο <code>if</code>.</p>
   <pre><code class="language-python">temperature = 30
 if temperature > 25:
@@ -121,29 +153,111 @@ elif temperature > 15:
     print("Ωραία.")
 else:
     print("Μπρρρ!")</code></pre>
-  <p>Συγκρίσεις: <code>&gt;</code> μεγαλύτερο, <code>&lt;</code> μικρότερο, <code>==</code> ίσο (δύο ίσον!), <code>!=</code> διαφορετικό. Συνδύασε ελέγχους με <code>and</code> (και), <code>or</code> (ή), <code>not</code> (όχι), για παράδειγμα <code>if a &gt; 0 and b &gt; 0:</code>.</p>
+  <p>Συγκρίσεις: <code>&gt;</code> μεγαλύτερο, <code>&lt;</code> μικρότερο, <code>&gt;=</code> μεγαλύτερο ή ίσο, <code>==</code> ίσο (δύο ίσον!), <code>!=</code> διαφορετικό. Συνδύασε ελέγχους με <code>and</code> (και), <code>or</code> (ή), <code>not</code> (όχι), για παράδειγμα <code>if a &gt; 0 and b &gt; 0:</code>.</p>
 
-  <h3>5. Βρόχοι: κάν' το ξανά</h3>
-  <pre><code class="language-python">for i in range(3):   # τρέχει 3 φορές: i = 0, 1, 2
+  <h3>6. Βρόχοι: κάν' το ξανά</h3>
+  <pre><code class="language-python">for i in range(3):        # τρέχει 3 φορές: i = 0, 1, 2
     print("Ζήτω!", i)
 
-while True:          # τρέχει ΓΙΑ ΠΑΝΤΑ
-    print("Δεν σταματάω ποτέ!")</code></pre>
+for i in range(10, 0, -2):  # ξεκίνα από 10, σταμάτα πριν το 0, βήμα -2
+    print(i)                # 10 8 6 4 2
+
+count = 0
+while count < 3:          # επανάλαβε ΟΣΟ αυτό είναι True
+    count += 1
+print("μέτρησα ως το", count)
+
+while True:               # τρέχει ΓΙΑ ΠΑΝΤΑ...
+    print("Δεν σταματάω ποτέ!")
+    break                 # ...εκτός αν βγεις με break</code></pre>
   <p>Σχεδόν κάθε πρόγραμμα για το CLUE έχει έναν βρόχο <code>while True:</code>, ώστε να ελέγχει συνέχεια τα κουμπιά και τους αισθητήρες.</p>
 
-  <h3>6. Λίστες και πλειάδες (tuples): πολλά πράγματα σε ένα κουτί</h3>
-  <pre><code class="language-python">colors = ["red", "green", "blue"]   # μια λίστα
-print(colors[0])                     # "red" (η μέτρηση ξεκινάει από το 0!)
-purple = (255, 0, 255)               # ένα tuple: πόσο κόκκινο, πράσινο, μπλε
-x, y, z = (1, 2, 3)                  # "ξεπακετάρουμε" ένα tuple σε 3 μεταβλητές</code></pre>
+  <h3>7. Λίστες (πίνακες / arrays!): πολλά πράγματα σε ένα κουτί</h3>
+  <p>Στο Scratch λέγονται <b>λίστες</b>, στο MakeCode <b>πίνακες (arrays)</b> και στην Python <b>λίστες (lists)</b>. Μια λίστα κρατάει πράγματα <b>με σειρά</b>, μέσα σε αγκύλες <code>[ ]</code>.</p>
+  <pre><code class="language-python">pets = ["cat", "dog", "hamster"]
 
-  <h3>7. import και time.sleep()</h3>
-  <pre><code class="language-python">import time          # δανειζόμαστε τα εργαλεία ρολογιού της Python
-time.sleep(0.5)      # περίμενε μισό δευτερόλεπτο
+print(pets[0])        # cat      (η μέτρηση ξεκινάει από το 0!)
+print(pets[2])        # hamster
+print(pets[-1])       # hamster  (-1 = το ΤΕΛΕΥΤΑΙΟ)
+print(len(pets))      # 3        (πόσα στοιχεία έχει)
+
+pets[1] = "parrot"    # άλλαξε ένα στοιχείο
+pets.append("fish")   # πρόσθεσε στο τέλος
+pets.insert(0, "frog")  # πρόσθεσε στη θέση 0
+pets.remove("cat")    # βγάλε ένα στοιχείο με βάση την τιμή του
+last = pets.pop()     # βγάλε το τελευταίο (και κράτα το)
+print(pets, last)     # ['frog', 'parrot', 'hamster'] fish
+
+if "frog" in pets:    # υπάρχει στη λίστα;
+    print("Κουάξ!")</code></pre>
+
+  <h4>Βρόχος πάνω σε μια λίστα</h4>
+  <pre><code class="language-python">scores = [12, 45, 7, 30]
+
+for s in scores:               # το s γίνεται κάθε στοιχείο με τη σειρά
+    print("σκορ:", s)
+
+for i in range(len(scores)):   # όταν χρειάζεσαι και τη θέση
+    print("παίκτης", i, "έφερε", scores[i])
+
+print(sum(scores), max(scores), min(scores))  # 94 45 7
+print(sorted(scores))          # [7, 12, 30, 45]
+print(scores[1:3])             # [45, 7]  ένα «κομμάτι» (slice): στοιχεία 1 και 2</code></pre>
+
+  <h4>Φτιάχνοντας μια λίστα λίγο-λίγο</h4>
+  <pre><code class="language-python">evens = []                # ξεκίνα με άδεια λίστα
+for n in range(1, 11):
+    if n % 2 == 0:
+        evens.append(n)
+print(evens)              # [2, 4, 6, 8, 10]</code></pre>
+
+  <h4>Λίστες μέσα σε λίστες: ένα πλέγμα</h4>
+  <p>Τέλειο για ταμπλό παιχνιδιών και λαβυρίνθους. <code>grid[γραμμή][στήλη]</code>:</p>
+  <pre><code class="language-python">grid = [
+    [0, 1, 0],
+    [1, 1, 1],
+    [0, 1, 0],
+]
+print(grid[1][2])         # γραμμή 1, στήλη 2 -> 1
+grid[0][0] = 9
+for row in grid:
+    print(row)</code></pre>
+
+  <details><summary>🧩 Δοκίμασέ το: γρίφοι με λίστες (οι απαντήσεις είναι μέσα)</summary>
+    <p><b>1.</b> <code>nums = [5, 10, 15, 20]</code>. Τι είναι το <code>nums[-2]</code>; <b>2.</b> Τι δίνει το <code>len([])</code>; <b>3.</b> Μετά από <code>a = [1, 2]</code> και <code>a.append(a[0] + a[1])</code>, τι είναι το <code>a</code>;</p>
+    <p><b>Απαντήσεις:</b> 1. <code>15</code> &nbsp; 2. <code>0</code> (άδεια λίστα) &nbsp; 3. <code>[1, 2, 3]</code></p>
+  </details>
+
+  <h3>8. Tuples (πλειάδες): λίστες που δεν αλλάζουν ποτέ</h3>
+  <p>Παρενθέσεις <code>( )</code> αντί για αγκύλες. Μπορείς να τις διαβάσεις αλλά όχι να τις αλλάξεις. Το CLUE τις χρησιμοποιεί συνέχεια: τα χρώματα και οι μετρήσεις των αισθητήρων είναι tuples.</p>
+  <pre><code class="language-python">purple = (255, 0, 255)     # πόσο κόκκινο, πράσινο, μπλε
+print(purple[0])           # 255
+x, y, z = (1, 2, 3)        # "ξεπακετάρουμε" ένα tuple σε 3 μεταβλητές
+# purple[0] = 100          # ΛΑΘΟΣ! τα tuples δεν αλλάζουν</code></pre>
+
+  <h3>9. Strings: παιχνίδι με κείμενο</h3>
+  <pre><code class="language-python">word = "clue"
+print(word.upper())        # CLUE
+print(len(word))           # 4 γράμματα
+print(word[0])             # c  (τα strings δουλεύουν σαν λίστες από γράμματα!)
+print("Hi " + word + "!")  # Hi clue!  (το + κολλάει κείμενα μαζί)
+print("ha" * 3)            # hahaha
+
+age = 12
+print("Είμαι " + str(age))  # το str() κάνει έναν αριθμό κείμενο
+print(int("7") + 1)         # το int() κάνει κείμενο αριθμό: 8</code></pre>
+
+  <h3>10. import: δανείσου υπερδυνάμεις</h3>
+  <pre><code class="language-python">import time              # εργαλεία ρολογιού
+time.sleep(0.5)          # περίμενε μισό δευτερόλεπτο
+
+import random            # εργαλεία για ζάρια και τύχη
+print(random.randint(1, 6))          # τυχαίος ακέραιος από 1 έως 6
+print(random.choice(["rock", "paper", "scissors"]))  # διάλεξε από μια λίστα
 
 from adafruit_clue import clue   # δανειζόμαστε ΟΛΕΣ τις δυνάμεις του CLUE</code></pre>
 
-  <h3>8. Συναρτήσεις: οι δικές σου εντολές</h3>
+  <h3>11. Συναρτήσεις: οι δικές σου εντολές</h3>
   <pre><code class="language-python">def cheer(name):
     print("Πάμε", name, "πάμε!")
 
@@ -152,15 +266,46 @@ cheer("Robo")   # Πάμε Robo πάμε!
 def double(n):
     return n * 2      # το return δίνει πίσω μια απάντηση
 
-print(double(4))      # 8</code></pre>
+print(double(4))      # 8
+
+def average(numbers):             # συναρτήσεις + λίστες = δύναμη!
+    return sum(numbers) / len(numbers)
+
+print(average([10, 20, 30]))      # 20.0</code></pre>
   <p>Το <code>print</code> δείχνει κάτι· το <code>return</code> δίνει την απάντηση πίσω στον κώδικα που κάλεσε τη συνάρτηση.</p>
 
-  <h3>9. f-strings: ανακάτεψε κείμενο και αριθμούς</h3>
+  <h3>12. f-strings: ανακάτεψε κείμενο και αριθμούς</h3>
   <pre><code class="language-python">temp = 21.5678
 print(f"Θερμοκρασία: {temp:.1f} C")   # Θερμοκρασία: 21.6 C  (.1f = 1 δεκαδικό ψηφίο)</code></pre>
 
+  <h3>13. Μπόνους: λεξικά (dictionaries), λίστες με ταμπελάκια</h3>
+  <p>Μια λίστα βρίσκει πράγματα με βάση τη <b>θέση</b>. Ένα λεξικό τα βρίσκει με βάση ένα <b>όνομα</b> (ένα «κλειδί»), με άγκιστρα <code>{ }</code>.</p>
+  <pre><code class="language-python">colors = {"red": (255, 0, 0), "green": (0, 255, 0), "blue": (0, 0, 255)}
+print(colors["green"])      # (0, 255, 0)
+colors["pink"] = (255, 0, 128)   # πρόσθεσε νέο κλειδί
+
+for name in colors:
+    print(name, colors[name])   # προσοχή: στο CLUE η σειρά μπορεί να βγει ανακατεμένη!</code></pre>
+  <p>Σε αντίθεση με τη λίστα, ένα λεξικό στο CLUE δεν υπόσχεται να κρατήσει τη σειρά. Όταν η σειρά μετράει, χρησιμοποίησε λίστα.</p>
+
+  <h3>🔬 Μίνι project: μια λίστα με αληθινές μετρήσεις</h3>
+  <p>Μόλις στήσεις το CLUE σου (στο επόμενο επίπεδο), δοκίμασε αυτό. Μαζεύει 10 μετρήσεις θερμοκρασίας σε μια λίστα και μετά κάνει μαθηματικά με αυτές.</p>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+readings = []
+for i in range(10):
+    readings.append(clue.temperature)
+    time.sleep(0.2)
+
+print("όλες:", [round(t, 1) for t in readings])
+print(f"χαμηλότερη {min(readings):.1f}  υψηλότερη {max(readings):.1f}")
+print(f"μέσος όρος {sum(readings) / len(readings):.2f}")</code></pre>
+  <p>Η γραμμή με το <code>[round(t, 1) for t in readings]</code> είναι μια έξυπνη συντόμευση που φτιάχνει μια νέα λίστα με κάθε μέτρηση στρογγυλεμένη. Δεν χρειάζεται να γράφεις τέτοιες ακόμα!</p>
+  <div class="box challenge"><b>🏆 Πρόκληση</b><br>Άλλαξέ το ώστε να μαζεύει μετρήσεις <code>clue.sound_level</code> και να τυπώνει πόσες ήταν πάνω από 20 (βοήθεια: ένας μετρητής και ένα <code>if</code> μέσα σε έναν βρόχο <code>for</code>).</div>
+
   <div class="box tip"><b>🧠 Θυμήσου</b><br>Η Python είναι αυστηρή: <b>τα κεφαλαία μετράνε</b> (<code>True</code> και όχι <code>true</code>), η <b>άνω και κάτω τελεία</b> (<code>:</code>) μπαίνει στο τέλος των γραμμών με <code>if</code>/<code>for</code>/<code>while</code>/<code>def</code>, και <b>η εσοχή είναι 4 κενά</b>.</div>
-  <button class="btn done-btn" data-id="python" data-xp="100">Μιλάω Python! +100 XP</button>
+  <button class="btn done-btn" data-id="python" data-xp="150">Μιλάω Python! +150 XP</button>
 </section>
 
 <!-- SETUP -->

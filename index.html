@@ -94,8 +94,28 @@
 <!-- PYTHON -->
 <section class="card" id="python" style="--c:var(--yellow)">
   <span class="tag">Level 1</span>
-  <h2><span class="emoji">🐍</span>Python in 10 minutes</h2>
+  <h2><span class="emoji">🐍</span>Python in 20 minutes</h2>
   <p><b>CircuitPython</b> is Python made for tiny boards. If you already know Python, skim this and move on. If not, these are the only ideas you need for the whole quest. After Setup, paste them into the REPL (see Troubleshooting) or into <code>code.py</code>.</p>
+
+  <details open><summary>🧱 Coming from Scratch or MakeCode?</summary>
+  <p>You already know how to code! Python just uses typed words instead of blocks. Here's the translation:</p>
+  <div class="tbl"><table>
+    <tr><th>Block</th><th>Python</th></tr>
+    <tr><td>forever</td><td><code>while True:</code></td></tr>
+    <tr><td>repeat 10</td><td><code>for i in range(10):</code></td></tr>
+    <tr><td>if &lt;&gt; then / else</td><td><code>if ...:<br>else:</code></td></tr>
+    <tr><td>set score to 0</td><td><code>score = 0</code></td></tr>
+    <tr><td>change score by 1</td><td><code>score += 1</code></td></tr>
+    <tr><td>say Hello / show string</td><td><code>print("Hello")</code></td></tr>
+    <tr><td>wait 1 second / pause 1000 ms</td><td><code>time.sleep(1)</code></td></tr>
+    <tr><td>make a block / function</td><td><code>def my_block():</code></td></tr>
+    <tr><td>list / array</td><td><code>things = [1, 2, 3]</code></td></tr>
+    <tr><td>add thing to list</td><td><code>things.append(4)</code></td></tr>
+    <tr><td>item 1 of list</td><td><code>things[0]  (Python starts at 0!)</code></td></tr>
+    <tr><td>length of list</td><td><code>len(things)</code></td></tr>
+    <tr><td>pick random 1 to 6</td><td><code>random.randint(1, 6)</code></td></tr>
+  </table></div>
+  </details>
 
   <h3>1. Comments: notes for humans</h3>
   <p>Anything after <code>#</code> is ignored by the computer.</p>
@@ -110,9 +130,21 @@ print(2 + 3)      # prints 5</code></pre>
   <pre><code class="language-python">score = 0          # a number
 name = "Robo"      # text (a "string") goes in quotes
 score = score + 10 # now score is 10
+score += 5         # shortcut for score = score + 5, now 15
 print(name, "has", score, "points")</code></pre>
 
-  <h3>4. True / False and if</h3>
+  <h3>4. Math: Python is a calculator</h3>
+  <pre><code class="language-python">print(7 + 2)    # 9   add
+print(7 - 2)    # 5   subtract
+print(7 * 2)    # 14  multiply (a star, not x)
+print(7 / 2)    # 3.5 divide
+print(7 // 2)   # 3   divide and throw away the leftover
+print(7 % 2)    # 1   ONLY the leftover (remainder)
+print(2 ** 3)   # 8   power: 2 x 2 x 2
+print(round(3.7))  # 4</code></pre>
+  <p><code>%</code> is super handy: <code>n % 2 == 0</code> means "n is even", and <code>angle % 360</code> keeps an angle between 0 and 359.</p>
+
+  <h3>5. True / False and if</h3>
   <p><b>Indentation matters!</b> The lines pushed in by 4 spaces belong to the <code>if</code>.</p>
   <pre><code class="language-python">temperature = 30
 if temperature > 25:
@@ -121,29 +153,111 @@ elif temperature > 15:
     print("Nice.")
 else:
     print("Brrr!")</code></pre>
-  <p>Comparisons: <code>&gt;</code> bigger, <code>&lt;</code> smaller, <code>==</code> equal (two equals signs!), <code>!=</code> not equal. Combine tests with <code>and</code>, <code>or</code>, <code>not</code> (for example <code>if a &gt; 0 and b &gt; 0:</code>).</p>
+  <p>Comparisons: <code>&gt;</code> bigger, <code>&lt;</code> smaller, <code>&gt;=</code> bigger or equal, <code>==</code> equal (two equals signs!), <code>!=</code> not equal. Combine tests with <code>and</code>, <code>or</code>, <code>not</code> (for example <code>if a &gt; 0 and b &gt; 0:</code>).</p>
 
-  <h3>5. Loops: do it again</h3>
-  <pre><code class="language-python">for i in range(3):   # runs 3 times: i = 0, 1, 2
+  <h3>6. Loops: do it again</h3>
+  <pre><code class="language-python">for i in range(3):        # runs 3 times: i = 0, 1, 2
     print("Hip hip hooray", i)
 
-while True:          # runs FOREVER
-    print("I never stop!")</code></pre>
+for i in range(10, 0, -2):  # start 10, stop before 0, step -2
+    print(i)                # 10 8 6 4 2
+
+count = 0
+while count < 3:          # repeat WHILE this is True
+    count += 1
+print("counted to", count)
+
+while True:               # runs FOREVER...
+    print("I never stop!")
+    break                 # ...unless you break out of it</code></pre>
   <p>Almost every CLUE program has a <code>while True:</code> loop, so it keeps checking the buttons and sensors forever.</p>
 
-  <h3>6. Lists and tuples: many things in one box</h3>
-  <pre><code class="language-python">colors = ["red", "green", "blue"]   # a list
-print(colors[0])                     # "red" (counting starts at 0!)
-purple = (255, 0, 255)               # a tuple: red, green, blue amounts
-x, y, z = (1, 2, 3)                  # "unpack" a tuple into 3 variables</code></pre>
+  <h3>7. Lists (arrays!): many things in one box</h3>
+  <p>In Scratch they're called <b>lists</b>, in MakeCode <b>arrays</b>, and in Python <b>lists</b>. A list keeps things <b>in order</b> inside square brackets <code>[ ]</code>.</p>
+  <pre><code class="language-python">pets = ["cat", "dog", "hamster"]
 
-  <h3>7. import and time.sleep()</h3>
-  <pre><code class="language-python">import time          # borrow Python's clock tools
-time.sleep(0.5)      # wait half a second
+print(pets[0])        # cat      (counting starts at 0!)
+print(pets[2])        # hamster
+print(pets[-1])       # hamster  (-1 = the LAST one)
+print(len(pets))      # 3        (how many things)
+
+pets[1] = "parrot"    # change an item
+pets.append("fish")   # add to the end
+pets.insert(0, "frog")  # add at position 0
+pets.remove("cat")    # remove by value
+last = pets.pop()     # take the last one out (and keep it)
+print(pets, last)     # ['frog', 'parrot', 'hamster'] fish
+
+if "frog" in pets:    # is it in the list?
+    print("Ribbit!")</code></pre>
+
+  <h4>Looping through a list</h4>
+  <pre><code class="language-python">scores = [12, 45, 7, 30]
+
+for s in scores:               # s becomes each item in turn
+    print("score:", s)
+
+for i in range(len(scores)):   # when you also need the position
+    print("player", i, "got", scores[i])
+
+print(sum(scores), max(scores), min(scores))  # 94 45 7
+print(sorted(scores))          # [7, 12, 30, 45]
+print(scores[1:3])             # [45, 7]  a "slice": items 1 and 2</code></pre>
+
+  <h4>Building a list bit by bit</h4>
+  <pre><code class="language-python">evens = []                # start with an empty list
+for n in range(1, 11):
+    if n % 2 == 0:
+        evens.append(n)
+print(evens)              # [2, 4, 6, 8, 10]</code></pre>
+
+  <h4>Lists inside lists: a grid</h4>
+  <p>Great for game boards and mazes. <code>grid[row][column]</code>:</p>
+  <pre><code class="language-python">grid = [
+    [0, 1, 0],
+    [1, 1, 1],
+    [0, 1, 0],
+]
+print(grid[1][2])         # row 1, column 2 -> 1
+grid[0][0] = 9
+for row in grid:
+    print(row)</code></pre>
+
+  <details><summary>🧩 Try it: list puzzles (answers inside)</summary>
+    <p><b>1.</b> <code>nums = [5, 10, 15, 20]</code>. What is <code>nums[-2]</code>? <b>2.</b> What does <code>len([])</code> give? <b>3.</b> After <code>a = [1, 2]</code> and <code>a.append(a[0] + a[1])</code>, what is <code>a</code>?</p>
+    <p><b>Answers:</b> 1. <code>15</code> &nbsp; 2. <code>0</code> (an empty list) &nbsp; 3. <code>[1, 2, 3]</code></p>
+  </details>
+
+  <h3>8. Tuples: lists that never change</h3>
+  <p>Round brackets <code>( )</code> instead of square ones. You can read them but not change them. The CLUE uses them a lot: colors and sensor readings are tuples.</p>
+  <pre><code class="language-python">purple = (255, 0, 255)     # red, green, blue amounts
+print(purple[0])           # 255
+x, y, z = (1, 2, 3)        # "unpack" a tuple into 3 variables
+# purple[0] = 100          # ERROR! tuples can't be changed</code></pre>
+
+  <h3>9. Strings: playing with text</h3>
+  <pre><code class="language-python">word = "clue"
+print(word.upper())        # CLUE
+print(len(word))           # 4 letters
+print(word[0])             # c  (strings work like lists of letters!)
+print("Hi " + word + "!")  # Hi clue!  (+ glues text together)
+print("ha" * 3)            # hahaha
+
+age = 12
+print("I am " + str(age))  # str() turns a number into text
+print(int("7") + 1)        # int() turns text into a number: 8</code></pre>
+
+  <h3>10. import: borrow superpowers</h3>
+  <pre><code class="language-python">import time              # clock tools
+time.sleep(0.5)          # wait half a second
+
+import random            # dice-rolling tools
+print(random.randint(1, 6))          # a random whole number 1 to 6
+print(random.choice(["rock", "paper", "scissors"]))  # pick from a list
 
 from adafruit_clue import clue   # borrow ALL the CLUE powers</code></pre>
 
-  <h3>8. Functions: your own commands</h3>
+  <h3>11. Functions: your own commands</h3>
   <pre><code class="language-python">def cheer(name):
     print("Go", name, "go!")
 
@@ -152,15 +266,46 @@ cheer("Robo")   # Go Robo go!
 def double(n):
     return n * 2      # return hands an answer back
 
-print(double(4))      # 8</code></pre>
+print(double(4))      # 8
+
+def average(numbers):             # functions + lists = power!
+    return sum(numbers) / len(numbers)
+
+print(average([10, 20, 30]))      # 20.0</code></pre>
   <p><code>print</code> shows something; <code>return</code> gives the answer back to the code that called the function.</p>
 
-  <h3>9. f-strings: mix text and numbers</h3>
+  <h3>12. f-strings: mix text and numbers</h3>
   <pre><code class="language-python">temp = 21.5678
 print(f"Temp: {temp:.1f} C")   # Temp: 21.6 C  (.1f = 1 decimal place)</code></pre>
 
+  <h3>13. Bonus: dictionaries, lists with name tags</h3>
+  <p>A list finds things by <b>position</b>. A dictionary finds them by <b>name</b> (a "key"), using curly brackets <code>{ }</code>.</p>
+  <pre><code class="language-python">colors = {"red": (255, 0, 0), "green": (0, 255, 0), "blue": (0, 0, 255)}
+print(colors["green"])      # (0, 255, 0)
+colors["pink"] = (255, 0, 128)   # add a new key
+
+for name in colors:
+    print(name, colors[name])   # careful: on the CLUE the order can come out mixed up!</code></pre>
+  <p>Unlike a list, a dictionary on the CLUE doesn't promise to keep its order. Use a list when order matters.</p>
+
+  <h3>🔬 Mini project: a list of real sensor readings</h3>
+  <p>Once your CLUE is set up (next level), try this. It collects 10 temperature readings into a list, then does math on them.</p>
+  <pre><code class="language-python">import time
+from adafruit_clue import clue
+
+readings = []
+for i in range(10):
+    readings.append(clue.temperature)
+    time.sleep(0.2)
+
+print("all:", [round(t, 1) for t in readings])
+print(f"lowest {min(readings):.1f}  highest {max(readings):.1f}")
+print(f"average {sum(readings) / len(readings):.2f}")</code></pre>
+  <p>The line with <code>[round(t, 1) for t in readings]</code> is a fancy shortcut that makes a new list with every reading rounded. You don't need to write those yourself yet!</p>
+  <div class="box challenge"><b>🏆 Challenge</b><br>Change it to collect <code>clue.sound_level</code> readings instead, and print how many of them were above 20 (hint: a counter and an <code>if</code> inside a <code>for</code> loop).</div>
+
   <div class="box tip"><b>🧠 Remember</b><br>Python is picky: <b>capital letters matter</b> (<code>True</code> not <code>true</code>), <b>colons</b> go at the end of <code>if</code>/<code>for</code>/<code>while</code>/<code>def</code> lines, and <b>indent with 4 spaces</b>.</div>
-  <button class="btn done-btn" data-id="python" data-xp="100">I speak Python! +100 XP</button>
+  <button class="btn done-btn" data-id="python" data-xp="150">I speak Python! +150 XP</button>
 </section>
 
 <!-- SETUP -->
