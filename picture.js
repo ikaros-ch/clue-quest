@@ -6,8 +6,15 @@ const T = EL ? {
   pick: "Διάλεξε μια φωτογραφία ή ένα GIF για να ξεκινήσεις.", loading: "Φόρτωση…", frames: n => `${n} καρέ`,
   ok: "Χωράει στο CLUE! 🎉", tooBig: "Πολύ μεγάλο για το CLUE. Δοκίμασε λιγότερα χρώματα, μικρότερο μέγεθος, λιγότερα καρέ ή κλείσε το dithering (ή πάτα «Αυτόματο ταίριασμα»).",
   tight: "Χωράει οριακά. Αν πάρεις MemoryError, μίκρυνέ το λίγο.",
-  fileOk: "Η καλύτερη ποιότητα! Ανέβασε το picture.bmp στο CLUE και μετά βάλε τον κώδικα στο code.py.",
-  fileGif: "Η λειτουργία αρχείου δείχνει μόνο το πρώτο καρέ. Για κίνηση, διάλεξε «Μόνο κώδικας».",
+  fileOk: "Η καλύτερη ποιότητα! Πάτα «Αποθήκευση στο CLUE» (ή κατέβασε το .zip και αντέγραψε τα αρχεία στο CIRCUITPY).",
+  fileAnim: fps => `Η καλύτερη ποιότητα, αλλά κάθε καρέ διαβάζεται από τον δίσκο, οπότε παίζει σαν slideshow (περίπου ${String(fps).replace(".", ",")} καρέ το δευτερόλεπτο).`,
+  flashFull: "Πάρα πολλά αρχεία για τον δίσκο του CLUE (έχει περίπου 1,9 MB ελεύθερα). Διάλεξε λιγότερα καρέ ή μικρότερο μέγεθος.",
+  saved: n => `Αποθηκεύτηκαν ${n} αρχεία στο CLUE! Κάνει επανεκκίνηση μόνο του. 🎉`,
+  notClue: "Αυτός ο φάκελος δεν είναι ο δίσκος CIRCUITPY (δεν έχει boot_out.txt). Δεν αποθηκεύτηκε τίποτα.",
+  noSave: "Ο browser σου δεν μπορεί να αποθηκεύσει κατευθείαν σε δίσκο. Χρησιμοποίησε το «Κατέβασμα .zip».",
+  lblCode: "Μέγεθος code.py", lblDrive: "Αρχεία στον δίσκο", lblRam: "Μνήμη CLUE",
+  c_frames: "κάθε αρχείο .bmp στον φάκελο /frames είναι ένα καρέ",
+  c_lazy: "ανοίγουμε ένα καρέ τη φορά, για να μη γεμίσει η μνήμη",
   copied: "Αντιγράφηκε!", autoFail: "Δεν βρέθηκε ρύθμιση που να χωράει. Δοκίμασε λιγότερα καρέ.",
   noCam: "Δεν βρέθηκε κάμερα ή δεν δόθηκε άδεια.",
   c_head: "Φτιαγμένο με το CLUE Quest Picture Maker", c_pal: "τα χρώματα της εικόνας (0xRRGGBB)",
@@ -19,8 +26,15 @@ const T = EL ? {
   pick: "Choose a photo or a GIF to start.", loading: "Loading…", frames: n => `${n} frames`,
   ok: "Fits on the CLUE! 🎉", tooBig: "Too big for the CLUE. Try fewer colors, a smaller size, fewer frames or turn off dithering (or press “Auto-fit”).",
   tight: "Just fits. If you get a MemoryError, shrink it a little.",
-  fileOk: "Best quality! Upload picture.bmp to the CLUE, then put the code in code.py.",
-  fileGif: "Picture-file mode shows only the first frame. For animation choose “Code only”.",
+  fileOk: "Best quality! Press “Save to CLUE” (or download the .zip and copy the files onto CIRCUITPY).",
+  fileAnim: fps => `Best quality, but every frame is read from the drive, so it plays like a slideshow (about ${fps} ${fps === 1 ? "frame" : "frames"} per second).`,
+  flashFull: "Too many files for the CLUE's drive (it has about 1.9 MB free). Use fewer frames or a smaller size.",
+  saved: n => `Saved ${n} files to the CLUE! It restarts by itself. 🎉`,
+  notClue: "That folder isn't the CIRCUITPY drive (there's no boot_out.txt). Nothing was saved.",
+  noSave: "Your browser can't save straight to a drive. Use “Download .zip” instead.",
+  lblCode: "code.py size", lblDrive: "Files on drive", lblRam: "CLUE memory",
+  c_frames: "every .bmp file in the /frames folder is one frame",
+  c_lazy: "open one frame at a time so memory never fills up",
   copied: "Copied!", autoFail: "Couldn't find a setting that fits. Try fewer frames.",
   noCam: "No camera found, or permission was denied.",
   c_head: "Made with the CLUE Quest Picture Maker", c_pal: "the picture's colors (0xRRGGBB)",
@@ -32,11 +46,13 @@ const T = EL ? {
 
 const CODE_LIMIT = 38000;   // bytes of code.py (tested: ~45 KB worked, ~60 KB crashed)
 const RAM_LIMIT = 60000;    // bytes of bitmaps kept in memory, see screen.html#memory
+const FLASH_LIMIT = 1800000; // bytes of files on CIRCUITPY (a fresh CLUE has ~1.9 MB free)
+const FILE_FPS = { 240: 0.9, 120: 0.9, 80: 0.9, 60: 0.9 };  // frames/s reading each frame from the drive (measured on a CLUE)
 const BAND = 16;            // rows per compressed strip, keeps unpacking memory small
 const $ = s => document.querySelector(s);
 
 let source = [];            // [{img: ImageBitmap, delay: seconds}]
-let out = null;             // last result {code, bmp, ...}
+let out = null;             // last result {code, files, ...}
 let busy = 0;
 
 // ---------- loading ----------
@@ -221,7 +237,8 @@ board.DISPLAY.root_group = group
 `);
 }
 
-function makeFileCode(W) {
+function makeFileCode(W, anim, delay) {
+  if (anim) return makeFramesCode(W, delay);
   return `# ${T.c_head}
 import time
 import board
@@ -236,6 +253,33 @@ board.DISPLAY.root_group = group
 
 while True:
     time.sleep(1)
+`;
+}
+
+function makeFramesCode(W, delay) {
+  return `# ${T.c_head}
+import os
+import time
+import board
+import displayio
+
+DELAY = ${delay.toFixed(2)}  # ${T.c_delay}
+
+# ${T.c_frames}
+names = sorted(n for n in os.listdir("/frames") if n.endswith(".bmp"))
+first = displayio.OnDiskBitmap("/frames/" + names[0])
+
+tile = displayio.TileGrid(first, pixel_shader=first.pixel_shader)
+group = displayio.Group(scale=${240 / W})
+group.append(tile)
+board.DISPLAY.root_group = group
+
+while True:  # ${T.c_anim}
+    for name in names:
+        frame = displayio.OnDiskBitmap("/frames/" + name)  # ${T.c_lazy}
+        tile.bitmap = frame
+        tile.pixel_shader = frame.pixel_shader
+        time.sleep(DELAY)
 `;
 }
 
@@ -258,7 +302,7 @@ function settings() {
 }
 
 async function build(s) {
-  const n = s.mode === "file" ? 1 : Math.min(s.frames, source.length);
+  const n = Math.min(s.frames, source.length);
   const picks = Array.from({ length: n }, (_, i) => source[Math.floor(i * source.length / n)]);
   const rgba = picks.map(p => fitFrame(p.img, s.W, s.fit, s.bg));
   const pal = buildPalette(rgba, s.mode === "file" ? Math.min(s.colors, 256) : s.colors);
@@ -266,14 +310,15 @@ async function build(s) {
   const totalDur = source.reduce((t, f) => t + f.delay, 0);
   const delay = n > 1 ? Math.max(0.05, totalDur / n) : 0.1;
   if (s.mode === "file") {
-    const code = makeFileCode(s.W);
-    return { s, pal, idx, delay, code, bmp: makeBmp(s.W, pal, idx[0]), size: code.length, ram: 0 };
+    const code = makeFileCode(s.W, n > 1, delay);
+    const files = idx.map((f, i) => ({ path: n > 1 ? `frames/frame${String(i).padStart(2, "0")}.bmp` : "picture.bmp", blob: makeBmp(s.W, pal, f) }));
+    return { s, pal, idx, delay, code, files, size: files.reduce((t, f) => t + f.blob.size, 0) + code.length, ram: 0 };
   }
   const code = await makeCode(s.W, pal, idx, delay);
   return { s, pal, idx, delay, code, size: new Blob([code]).size, ram: ramFor(s.W, pal.length, n) };
 }
 
-const fits = o => o.s.mode === "file" || (o.size <= CODE_LIMIT && o.ram <= RAM_LIMIT);
+const fits = o => o.s.mode === "file" ? o.size <= FLASH_LIMIT : o.size <= CODE_LIMIT && o.ram <= RAM_LIMIT;
 
 async function update() {
   if (!source.length) return;
@@ -286,14 +331,18 @@ async function update() {
 
 function show(o) {
   $("#code").value = o.code;
-  $("#bmpBtn").hidden = !o.bmp;
+  const file = o.s.mode === "file";
+  $("#zipBtn").hidden = !file;
   const pct = (v, lim) => Math.min(100, Math.round(v / lim * 100));
-  $("#sizeBar").style.width = o.s.mode === "file" ? "5%" : pct(o.size, CODE_LIMIT) + "%";
-  $("#ramBar").style.width = o.s.mode === "file" ? "5%" : pct(o.ram, RAM_LIMIT) + "%";
-  $("#sizeTxt").textContent = `${(o.size / 1024).toFixed(1)} KB / ${CODE_LIMIT / 1000} KB`;
-  $("#ramTxt").textContent = o.s.mode === "file" ? "–" : `${(o.ram / 1024).toFixed(1)} KB / ${RAM_LIMIT / 1000} KB`;
+  const lim = file ? FLASH_LIMIT : CODE_LIMIT;
+  $("#sizeLbl").textContent = file ? T.lblDrive : T.lblCode;
+  $("#ramLbl").textContent = T.lblRam;
+  $("#sizeBar").style.width = pct(o.size, lim) + "%";
+  $("#ramBar").style.width = file ? "5%" : pct(o.ram, RAM_LIMIT) + "%";
+  $("#sizeTxt").textContent = `${(o.size / 1024).toFixed(1)} KB / ${lim / 1000} KB`;
+  $("#ramTxt").textContent = file ? "–" : `${(o.ram / 1024).toFixed(1)} KB / ${RAM_LIMIT / 1000} KB`;
   $("#palInfo").textContent = `${o.pal.length}`;
-  if (o.s.mode === "file") setStatus(source.length > 1 ? T.fileGif : T.fileOk, "ok");
+  if (file) setStatus(!fits(o) ? T.flashFull : o.idx.length > 1 ? T.fileAnim(FILE_FPS[o.s.W]) : T.fileOk, fits(o) ? "ok" : "bad");
   else if (!fits(o)) setStatus(T.tooBig, "bad");
   else if (o.size > CODE_LIMIT * 0.85 || o.ram > RAM_LIMIT * 0.85) setStatus(T.tight, "warn");
   else setStatus(T.ok, "ok");
@@ -315,7 +364,8 @@ function animate(o) {
     g.imageSmoothingEnabled = false;
     g.drawImage(small, 0, 0, cv.width, cv.height);
     f++;
-    if (o.idx.length > 1) timer = setTimeout(tick, Math.max(o.delay, 1 / 3) * 1000);  // the CLUE manages ~3 full redraws/s
+    const fastest = o.s.mode === "file" ? 1 / FILE_FPS[W] : 1 / 3;  // ~3 full redraws/s from memory, slower from the drive
+    if (o.idx.length > 1) timer = setTimeout(tick, Math.max(o.delay, fastest) * 1000);
   })();
 }
 
@@ -352,6 +402,56 @@ function download(blob, name) {
 
 function syncLabels() { $("#colorsVal").textContent = $("#colors").value; $("#framesVal").textContent = $("#frames").value; }
 
+// ---------- saving ----------
+// Writes straight onto the CIRCUITPY drive (Chrome/Edge). code.py goes last so the CLUE restarts with everything in place.
+async function saveToClue() {
+  if (!out) return;
+  if (!window.showDirectoryPicker) return setStatus(T.noSave, "bad");
+  let dir;
+  try { dir = await showDirectoryPicker({ id: "circuitpy", mode: "readwrite" }); } catch { return; }  // cancelled
+  try { await dir.getFileHandle("boot_out.txt"); } catch { return setStatus(T.notClue, "bad"); }
+  const files = out.files || [];
+  if (files.some(f => f.path.startsWith("frames/"))) {
+    const fd = await dir.getDirectoryHandle("frames", { create: true });
+    const old = [];
+    for await (const name of fd.keys()) if (name.endsWith(".bmp")) old.push(name);
+    for (const name of old) await fd.removeEntry(name);   // no leftover frames from a longer GIF
+  }
+  for (const f of [...files, { path: "code.py", blob: new Blob([out.code]) }]) {
+    let d = dir;
+    const parts = f.path.split("/");
+    for (const part of parts.slice(0, -1)) d = await d.getDirectoryHandle(part, { create: true });
+    const w = await (await d.getFileHandle(parts.at(-1), { create: true })).createWritable();
+    await w.write(f.blob);
+    await w.close();
+  }
+  setStatus(T.saved(files.length + 1), "ok");
+}
+
+// Minimal .zip: files are stored, not compressed (the CLUE needs plain BMPs anyway)
+const CRC = Array.from({ length: 256 }, (_, n) => { for (let k = 0; k < 8; k++) n = n & 1 ? 0xEDB88320 ^ (n >>> 1) : n >>> 1; return n >>> 0; });
+function crc32(u) { let c = ~0; for (const b of u) c = CRC[(c ^ b) & 255] ^ (c >>> 8); return ~c >>> 0; }
+async function makeZip(files) {
+  const parts = [], central = [];
+  let offset = 0;
+  for (const f of files) {
+    const data = new Uint8Array(await f.blob.arrayBuffer()), name = new TextEncoder().encode(f.path), crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint32(14, crc, true);
+    h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint32(16, crc, true);
+    c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, offset, true);
+    parts.push(h, name, data);
+    central.push(c, name);
+    offset += 30 + name.length + data.length;
+  }
+  const size = central.reduce((t, p) => t + p.byteLength, 0), end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, size, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, end], { type: "application/zip" });
+}
+
 // ---------- camera ----------
 let stream = null;
 async function camera() {
@@ -383,6 +483,7 @@ $("#copyBtn").addEventListener("click", () => navigator.clipboard.writeText($("#
   const b = $("#copyBtn"), t = b.textContent; b.textContent = T.copied; setTimeout(() => b.textContent = t, 1200);
 }));
 $("#dlBtn").addEventListener("click", () => out && download(new Blob([out.code], { type: "text/x-python" }), "code.py"));
-$("#bmpBtn").addEventListener("click", () => out && out.bmp && download(out.bmp, "picture.bmp"));
+$("#zipBtn").addEventListener("click", async () => out && out.files && download(await makeZip([...out.files, { path: "code.py", blob: new Blob([out.code]) }]), "clue-picture.zip"));
+$("#saveBtn").addEventListener("click", saveToClue);
 syncLabels();
 setStatus(T.pick, "");

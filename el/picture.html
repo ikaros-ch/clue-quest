@@ -59,7 +59,7 @@
 
       <h3>3 · Πώς θα το στείλεις</h3>
       <label class="pm-check"><input type="radio" name="mode" value="code" checked> <span><b>Μόνο κώδικας</b>: επικόλλησέ τον στο code.py, δεν χρειάζεται να ανεβάσεις τίποτα άλλο. Δουλεύει και για GIF.</span></label>
-      <label class="pm-check"><input type="radio" name="mode" value="file"> <span><b>Αρχείο εικόνας + κώδικας</b>: η καλύτερη ποιότητα (έως 256 χρώματα σε 240 × 240), μόνο για ακίνητες εικόνες.</span></label>
+      <label class="pm-check"><input type="radio" name="mode" value="file"> <span><b>Αρχείο εικόνας + κώδικας</b>: η καλύτερη ποιότητα (έως 256 χρώματα σε 240 × 240). Τα GIF γίνονται ένα .bmp για κάθε καρέ και παίζουν πιο αργά, σαν slideshow.</span></label>
       <button class="btn small" id="autoBtn" type="button">✨ Αυτόματη προσαρμογή για το CLUE</button>
     </section>
 
@@ -67,8 +67,8 @@
       <span class="tag">Προεπισκόπηση</span>
       <div class="clue-frame"><canvas id="preview" width="480" height="480"></canvas></div>
       <p class="status" id="status"></p>
-      <div class="meter"><span>Μέγεθος code.py</span><div class="bar"><div id="sizeBar"></div></div><small id="sizeTxt"></small></div>
-      <div class="meter"><span>Μνήμη CLUE</span><div class="bar"><div id="ramBar"></div></div><small id="ramTxt"></small></div>
+      <div class="meter"><span id="sizeLbl">Μέγεθος code.py</span><div class="bar"><div id="sizeBar"></div></div><small id="sizeTxt"></small></div>
+      <div class="meter"><span id="ramLbl">Μνήμη CLUE</span><div class="bar"><div id="ramBar"></div></div><small id="ramTxt"></small></div>
       <p><small>Χρώματα στην παλέτα: <b id="palInfo">–</b>. Η προεπισκόπηση χρησιμοποιεί τα πραγματικά χρώματα RGB565 της οθόνης.</small></p>
     </section>
   </div>
@@ -78,14 +78,16 @@
     <p class="pm-row">
       <button class="btn small" id="copyBtn" type="button">📋 Αντιγραφή κώδικα</button>
       <button class="btn small" id="dlBtn" type="button">💾 Κατέβασε το code.py</button>
-      <button class="btn small" id="bmpBtn" type="button" hidden>🖼️ Κατέβασε το picture.bmp</button>
+      <button class="btn small" id="saveBtn" type="button">🔌 Αποθήκευση στο CLUE</button>
+      <button class="btn small" id="zipBtn" type="button" hidden>📦 Κατέβασμα .zip</button>
     </p>
     <textarea id="code" readonly spellcheck="false" aria-label="Κώδικας CircuitPython που δημιουργήθηκε"></textarea>
     <h3>Βάλ' το στο CLUE σου</h3>
     <ol class="steps">
       <li>Συνδέσου στο <a href="https://code.circuitpython.org/" target="_blank" rel="noopener">code.circuitpython.org</a> (δες <a href="./#setup">Εγκατάσταση, Μέρος Γ</a>) και άνοιξε το <code>code.py</code>.</li>
+      <li><b>Το πιο εύκολο (Chrome/Edge):</b> πάτα <b>Αποθήκευση στο CLUE</b>, διάλεξε τον δίσκο <b>CIRCUITPY</b> και επίτρεψε την επεξεργασία. Η εφαρμογή γράφει μόνη της το code.py (και τις εικόνες). Προσοχή: αντικαθιστά το τωρινό σου code.py!</li>
       <li><b>Μόνο κώδικας:</b> επίλεξε τα πάντα στο code.py, επικόλλησε τον κώδικά σου και πάτα <b>Save + Run</b>. Έτοιμο!</li>
-      <li><b>Αρχείο εικόνας:</b> πάτα <b>Open</b>, μετά το κουμπί <b>upload</b> (βελάκι προς τα πάνω) στο παράθυρο των αρχείων και ανέβασε το <code>picture.bmp</code>. Μετά επικόλλησε τον κώδικα στο code.py και πάτα <b>Save + Run</b>.</li>
+      <li><b>Αρχείο εικόνας:</b> πάτα <b>Κατέβασμα .zip</b> και αποσυμπίεσέ το. Αντέγραψε το <code>picture.bmp</code> (ή όλο τον φάκελο <code>frames</code> για ένα GIF) και το <code>code.py</code> στον δίσκο CIRCUITPY από την Εξερεύνηση αρχείων.</li>
     </ol>
     <div class="box tip"><b>💡 Γιατί τόσο λίγα χρώματα;</b><br>Κάθε χρώμα κοστίζει μνήμη, και το CLUE έχει μόνο περίπου 70 KB ελεύθερα για το πρόγραμμά σου. Οι μεγάλες φωτογραφίες χρειάζονται dithering για να φαίνονται ωραίες, αλλά οι εικόνες με dithering στριμώχνονται πιο δύσκολα. Οι μετρητές σού λένε πότε χωράει. Το <a href="screen.html#memory">Εργαστήριο Οθόνης</a> εξηγεί τα μαθηματικά.</div>
   </section>

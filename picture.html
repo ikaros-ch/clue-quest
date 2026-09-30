@@ -59,7 +59,7 @@
 
       <h3>3 · How to send it</h3>
       <label class="pm-check"><input type="radio" name="mode" value="code" checked> <span><b>Code only</b>: paste into code.py, nothing else to upload. Works for GIFs too.</span></label>
-      <label class="pm-check"><input type="radio" name="mode" value="file"> <span><b>Picture file + code</b>: best quality (up to 256 colors at 240 × 240), stills only.</span></label>
+      <label class="pm-check"><input type="radio" name="mode" value="file"> <span><b>Picture file + code</b>: best quality (up to 256 colors at 240 × 240). GIFs become one .bmp per frame, which plays slower, like a slideshow.</span></label>
       <button class="btn small" id="autoBtn" type="button">✨ Auto-fit to the CLUE</button>
     </section>
 
@@ -67,8 +67,8 @@
       <span class="tag">Preview</span>
       <div class="clue-frame"><canvas id="preview" width="480" height="480"></canvas></div>
       <p class="status" id="status"></p>
-      <div class="meter"><span>code.py size</span><div class="bar"><div id="sizeBar"></div></div><small id="sizeTxt"></small></div>
-      <div class="meter"><span>CLUE memory</span><div class="bar"><div id="ramBar"></div></div><small id="ramTxt"></small></div>
+      <div class="meter"><span id="sizeLbl">code.py size</span><div class="bar"><div id="sizeBar"></div></div><small id="sizeTxt"></small></div>
+      <div class="meter"><span id="ramLbl">CLUE memory</span><div class="bar"><div id="ramBar"></div></div><small id="ramTxt"></small></div>
       <p><small>Colors in the palette: <b id="palInfo">–</b>. The preview uses the screen's real RGB565 colors.</small></p>
     </section>
   </div>
@@ -78,14 +78,16 @@
     <p class="pm-row">
       <button class="btn small" id="copyBtn" type="button">📋 Copy code</button>
       <button class="btn small" id="dlBtn" type="button">💾 Download code.py</button>
-      <button class="btn small" id="bmpBtn" type="button" hidden>🖼️ Download picture.bmp</button>
+      <button class="btn small" id="saveBtn" type="button">🔌 Save to CLUE</button>
+      <button class="btn small" id="zipBtn" type="button" hidden>📦 Download .zip</button>
     </p>
     <textarea id="code" readonly spellcheck="false" aria-label="Generated CircuitPython code"></textarea>
     <h3>Put it on your CLUE</h3>
     <ol class="steps">
       <li>Connect in <a href="https://code.circuitpython.org/" target="_blank" rel="noopener">code.circuitpython.org</a> (see <a href="./#setup">Setup, Part C</a>) and open <code>code.py</code>.</li>
+      <li><b>Easiest (Chrome/Edge):</b> click <b>Save to CLUE</b>, choose the <b>CIRCUITPY</b> drive and allow editing. The app writes code.py (and the pictures) for you. Careful: it replaces your current code.py!</li>
       <li><b>Code only:</b> select everything in code.py, paste your code, click <b>Save + Run</b>. Done!</li>
-      <li><b>Picture file:</b> click <b>Open</b>, then the <b>upload</b> button (arrow pointing up) in the file window and upload <code>picture.bmp</code>. Then paste the code into code.py and <b>Save + Run</b>.</li>
+      <li><b>Picture file:</b> click <b>Download .zip</b> and unzip it. Copy <code>picture.bmp</code> (or the whole <code>frames</code> folder for a GIF) and <code>code.py</code> onto the CIRCUITPY drive in your file explorer.</li>
     </ol>
     <div class="box tip"><b>💡 Why so few colors?</b><br>Each color costs memory, and the CLUE has only about 70 KB free for your program. Big photos need dithering to look good, but dithered pictures are harder to squeeze. The meters tell you when it fits. The <a href="screen.html#memory">Screen Lab</a> explains the math.</div>
   </section>
